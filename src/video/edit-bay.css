@@ -1,0 +1,1025 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&display=swap");
+
+/*
+ * Edit bay: the player as a small edit suite. The picture is the program monitor; the panel under it is the
+ * timeline and transport. Layered over the Scaffold skin, which keeps menus, tooltips, dialogs, indicators, and
+ * forced-colors support. Sizes follow the player's own width through the `media-root` container.
+ *
+ *   compact  < 30rem   timeline bar, play, timecode, mute, menu, full screen
+ *   medium  >= 30rem   adds the ruler, V1 clip names, 10-second seeks, subtitles, pop-out
+ *   full    >= 44rem   adds track headers, A1, frame steps, volume fader, shortcuts, AirPlay and Cast
+ */
+@layer components {
+  @scope (.media-skin.eb-skin[data-theme="scaffold"][data-preset="video"]) {
+    :scope {
+      font-family: var(--eb-font-sans);
+    }
+
+    .eb-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .eb-mono {
+      font-family: var(--eb-font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ---------- Buttons ---------- */
+
+    .media-button {
+      width: var(--eb-target);
+      height: var(--eb-target);
+      border-radius: var(--eb-radius);
+      color: var(--eb-ink);
+      transition: background-color var(--media-duration-fast) ease;
+    }
+
+    .media-button-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .media-button:focus-visible {
+      outline: 2px solid var(--eb-signal);
+      outline-offset: 2px;
+      background-color: var(--media-button-highlight);
+    }
+
+    /* ---------- Top: sequence tab and burned-in timecode ---------- */
+
+    .eb-top {
+      position: absolute;
+      inset-inline: 0;
+      top: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px;
+      pointer-events: none;
+      transition: opacity var(--media-duration-controls) ease;
+    }
+
+    .eb-sequence-tab {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      max-width: 60%;
+      height: 30px;
+      padding-inline: 10px 12px;
+      background-color: var(--eb-panel);
+      border-radius: var(--eb-radius);
+      color: var(--eb-ink);
+    }
+
+    .eb-sequence-dot {
+      flex-shrink: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background-color: var(--eb-signal);
+    }
+
+    .eb-sequence-tab .media-title {
+      flex: 0 1 auto;
+      padding: 0;
+      background: none;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 1;
+    }
+
+    .eb-sequence-rate {
+      flex-shrink: 0;
+      font-family: var(--eb-font-mono);
+      font-size: 12px;
+      color: var(--eb-ink-quiet);
+    }
+
+    .eb-burn-in {
+      margin-inline-start: auto;
+      padding: 3px 8px;
+      background-color: #000;
+      color: #fff;
+      font-family: var(--eb-font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+      line-height: 1.3;
+    }
+
+    /* ---------- Panel ---------- */
+
+    .video-controls-backdrop {
+      display: none;
+    }
+
+    .eb-panel {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 4px 8px 2px;
+      background-color: var(--eb-panel);
+      border-top: 1px solid var(--eb-line);
+      color: var(--eb-ink);
+      pointer-events: auto;
+      transition: opacity var(--media-duration-controls) ease;
+    }
+
+    @scope (.video-controls-content) {
+      &:not([data-visible]) .eb-panel,
+      &:not([data-visible]) .eb-top {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    /* ---------- Timeline ---------- */
+
+    .eb-timeline {
+      --eb-row-render: 3px;
+      --eb-row-ruler: 0px;
+      --eb-row-v1: 12px;
+      --eb-row-a1: 0px;
+      --eb-row-gap: 3px;
+      --eb-header-width: 0px;
+
+      display: grid;
+      grid-template-columns: var(--eb-header-width) minmax(0, 1fr);
+      column-gap: 0;
+      padding-block-start: 10px;
+    }
+
+    .eb-track-headers {
+      display: none;
+      grid-template-rows: calc(var(--eb-row-render) + var(--eb-row-gap) + var(--eb-row-ruler)) var(--eb-row-v1) var(--eb-row-a1);
+      row-gap: var(--eb-row-gap);
+    }
+
+    .eb-track-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--eb-panel-raised);
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--eb-ink-muted);
+    }
+
+    .eb-track-header-ruler {
+      background: none;
+    }
+
+    .eb-track-header[data-muted] {
+      color: var(--eb-ink-quiet);
+      text-decoration: line-through;
+    }
+
+    .eb-track-headers {
+      grid-column: 1;
+    }
+
+    .media-time-slider.eb-timeline-slider {
+      grid-column: 2;
+      display: grid;
+      grid-template-rows: var(--eb-row-render) var(--eb-row-ruler) var(--eb-row-v1) var(--eb-row-a1);
+      row-gap: var(--eb-row-gap);
+      align-items: stretch;
+      height: auto;
+      min-width: 0;
+      /* Lets a press land on the lanes even where a row is only a few pixels tall. */
+      padding-block: 2px;
+      touch-action: none;
+    }
+
+    /* Each row is pinned, so hiding one at a small size never shifts the others into it. */
+    .eb-render-bar {
+      grid-row: 1;
+    }
+
+    .eb-ruler {
+      grid-row: 2;
+    }
+
+    .media-time-slider-chapters.eb-lane-v1 {
+      grid-row: 3;
+    }
+
+    .eb-lane-a1 {
+      grid-row: 4;
+    }
+
+    .eb-render-bar {
+      position: relative;
+      background-color: var(--eb-line);
+      overflow: hidden;
+    }
+
+    .eb-render-bar-fill {
+      position: absolute;
+      inset-block: 0;
+      left: 0;
+      width: var(--media-slider-buffer, 0%);
+      background-color: var(--eb-render);
+    }
+
+    .eb-ruler {
+      position: relative;
+      display: none;
+      background-image: repeating-linear-gradient(to right, var(--eb-tick) 0 1px, transparent 1px var(--eb-tick-step, 100%));
+      background-position: left bottom;
+      background-size: 100% 5px;
+      background-repeat: no-repeat;
+    }
+
+    .eb-ruler-label {
+      position: absolute;
+      top: 0;
+      padding-inline-start: 3px;
+      border-inline-start: 1px solid var(--eb-tick);
+      font-family: var(--eb-font-mono);
+      font-size: 10px;
+      line-height: 14px;
+      color: var(--eb-ink-quiet);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .eb-lane {
+      position: relative;
+      background-color: var(--eb-lane);
+      overflow: hidden;
+    }
+
+    .media-time-slider-chapters.eb-lane-v1 {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .eb-chapter {
+      position: absolute;
+      inset: 0;
+    }
+
+    .eb-clip {
+      --eb-clip-color: var(--eb-clip-0);
+
+      position: absolute;
+      inset-block: 0;
+      left: calc(var(--media-slider-chapter-start, 0%) + 1px);
+      right: calc(100% - var(--media-slider-chapter-end, 100%) + 1px);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      padding-inline: 6px;
+      background-color: color-mix(in oklab, var(--eb-clip-color) 22%, var(--eb-lane));
+      border-top: 2px solid var(--eb-clip-color);
+      overflow: hidden;
+      transition: background-color var(--media-duration-fast) ease;
+    }
+
+    .eb-clip[data-color="1"] {
+      --eb-clip-color: var(--eb-clip-1);
+    }
+
+    .eb-clip[data-color="2"] {
+      --eb-clip-color: var(--eb-clip-2);
+    }
+
+    .eb-clip[data-color="3"] {
+      --eb-clip-color: var(--eb-clip-3);
+    }
+
+    .eb-clip[data-gap] {
+      --eb-clip-color: var(--eb-tick);
+    }
+
+    .eb-chapter[data-highlighted] .eb-clip {
+      background-color: color-mix(in oklab, var(--eb-clip-color) 36%, var(--eb-lane));
+    }
+
+    .eb-clip-marker {
+      display: none;
+    }
+
+    .eb-clip-name {
+      display: none;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--eb-ink);
+    }
+
+    .eb-lane-a1 {
+      display: none;
+    }
+
+    .eb-audio-clip {
+      position: absolute;
+      inset: 3px 1px;
+      background-color: var(--eb-audio);
+      border-top: 1px solid color-mix(in oklab, var(--eb-render) 70%, transparent);
+    }
+
+    .eb-lane-a1[data-muted] .eb-audio-clip {
+      background-color: transparent;
+      background-image: repeating-linear-gradient(135deg, var(--eb-line) 0 2px, transparent 2px 6px);
+      border-top-color: var(--eb-line);
+    }
+
+    /* The playhead: a red line through every lane with a triangular head on the ruler. The thumb is 14px wide and
+       transparent around the line, so its focus outline is easy to see. */
+    .media-time-slider-thumb.eb-playhead {
+      top: 0;
+      bottom: 0;
+      width: 14px;
+      height: auto;
+      border: none;
+      background-color: transparent;
+      background-image: linear-gradient(var(--eb-signal), var(--eb-signal));
+      background-position: center;
+      background-size: 2px 100%;
+      background-repeat: no-repeat;
+      border-radius: 0;
+      z-index: 2;
+    }
+
+    .media-time-slider-thumb.eb-playhead::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 0;
+      width: 14px;
+      height: 10px;
+      background-color: var(--eb-signal);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+    }
+
+    .media-time-slider-thumb.eb-playhead:focus-visible {
+      outline: 2px solid var(--eb-ink-strong);
+      outline-offset: 2px;
+    }
+
+    @media (forced-colors: active) {
+      .media-time-slider-thumb.eb-playhead {
+        forced-color-adjust: none;
+        background-image: linear-gradient(Highlight, Highlight);
+        background-color: transparent;
+        border: none;
+      }
+
+      .media-time-slider-thumb.eb-playhead::before {
+        background-color: Highlight;
+      }
+    }
+
+    /* Hover preview: the storyboard frame over a burned-in timecode and the chapter name. */
+    .media-time-slider-preview.eb-preview {
+      bottom: calc(100% + 14px);
+      gap: 0;
+      max-width: 168px;
+    }
+
+    .eb-preview-frame {
+      border: 1px solid var(--eb-line);
+      border-bottom: none;
+      background-color: #000;
+    }
+
+    .eb-preview-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      width: 100%;
+      padding: 4px 8px;
+      background-color: #000;
+      border: 1px solid var(--eb-line);
+    }
+
+    .eb-preview-timecode {
+      font-family: var(--eb-font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .eb-preview-chapter {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 12px;
+      color: var(--eb-ink-muted);
+    }
+
+    .eb-preview-chapter:empty {
+      display: none;
+    }
+
+    /* ---------- Transport row ---------- */
+
+    .eb-transport-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      min-height: calc(var(--eb-target) + 4px);
+    }
+
+    .eb-timecode {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      min-width: 0;
+      font-family: var(--eb-font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .eb-timecode-button {
+      display: inline-flex;
+      align-items: center;
+      height: var(--eb-target);
+      padding-inline: 4px;
+      margin-inline-start: -4px;
+      background: none;
+      border-radius: var(--eb-radius);
+      color: var(--eb-ink-strong);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    @media (hover: hover) {
+      .eb-timecode-button:hover {
+        background-color: var(--media-button-highlight);
+      }
+    }
+
+    .eb-timecode-button:focus-visible {
+      outline: 2px solid var(--eb-signal);
+      outline-offset: 2px;
+    }
+
+    .eb-timecode-duration {
+      display: none;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--eb-ink-quiet);
+      white-space: nowrap;
+    }
+
+    .eb-transport {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .eb-frame-button,
+    .eb-seek-button {
+      display: none;
+    }
+
+    .eb-play-button.media-button {
+      width: calc(var(--eb-target) + 8px);
+      background-color: var(--eb-ink);
+      color: #141516;
+    }
+
+    @media (hover: hover) {
+      .eb-play-button.media-button:hover {
+        background-color: var(--eb-ink-strong);
+      }
+    }
+
+    .eb-play-button.media-button:focus-visible {
+      background-color: var(--eb-ink-strong);
+    }
+
+    .eb-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0;
+      min-width: 0;
+    }
+
+    .eb-tools .media-captions-button,
+    .eb-tools .media-pip-button,
+    .eb-tools .media-airplay-button,
+    .eb-tools .media-cast-button,
+    .eb-shortcuts-button {
+      display: none;
+    }
+
+    .eb-volume {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .eb-volume-slider {
+      display: none;
+      position: relative;
+      align-items: center;
+      width: 84px;
+      height: var(--eb-target);
+      margin-inline-end: 6px;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .eb-volume-track {
+      position: relative;
+      width: 100%;
+      height: 4px;
+      background-color: var(--eb-line);
+    }
+
+    .eb-volume-fill {
+      position: absolute;
+      inset-block: 0;
+      left: 0;
+      width: var(--media-slider-fill, 0%);
+      background-color: var(--eb-ink-muted);
+    }
+
+    .eb-volume-thumb {
+      position: absolute;
+      left: var(--media-slider-fill, 0%);
+      width: 8px;
+      height: 18px;
+      transform: translateX(-50%);
+      background-color: var(--eb-ink);
+      border-radius: 1px;
+      outline: none;
+    }
+
+    .eb-volume-thumb:focus-visible {
+      outline: 2px solid var(--eb-signal);
+      outline-offset: 2px;
+    }
+
+    /* Visually hidden, not removed: the label is the settings button's accessible name. */
+    .media-settings-button-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* ---------- Popups ---------- */
+
+    .media-tooltip-popup {
+      background-color: #141516;
+      border: 1px solid var(--eb-line);
+      border-radius: var(--eb-radius);
+      color: var(--eb-ink);
+      font-family: var(--eb-font-sans);
+      font-size: 13px;
+    }
+
+    .media-tooltip-shortcut {
+      font-family: var(--eb-font-mono);
+      color: var(--eb-ink-quiet);
+    }
+
+    .media-menu-popup {
+      background-color: #141516;
+      border: 1px solid var(--eb-line);
+      border-radius: var(--eb-radius);
+      font-family: var(--eb-font-sans);
+    }
+
+    /* ---------- Slate ---------- */
+
+    /* Below 30rem the card can't fit above the panel, so the panel's play button stands alone. */
+    .eb-slate {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      /* Clears the sequence tab and timecode window above, and the panel below. */
+      padding: 52px 12px calc(var(--eb-panel-height) + 8px);
+      background-color: rgb(12 13 14 / 0.55);
+      pointer-events: none;
+    }
+
+    .eb-slate-card {
+      display: grid;
+      gap: 12px;
+      width: min(26rem, 100%);
+      padding-bottom: 14px;
+      background-color: var(--eb-panel);
+      border: 1px solid var(--eb-line);
+      pointer-events: auto;
+    }
+
+    .eb-slate-sticks {
+      height: 14px;
+      background-image: repeating-linear-gradient(135deg, var(--eb-ink) 0 12px, #141516 12px 24px);
+    }
+
+    .eb-slate-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 16px;
+      padding-inline: 16px;
+    }
+
+    .eb-slate-field {
+      display: none;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .eb-slate-field-title {
+      display: flex;
+      grid-column: 1 / -1;
+    }
+
+    .eb-slate-field dt {
+      font-size: 11px;
+      color: var(--eb-ink-quiet);
+    }
+
+    .eb-slate-field dd {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 15px;
+      color: var(--eb-ink-strong);
+    }
+
+    .eb-slate-field-title dd {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .eb-slate-play.media-button {
+      justify-self: start;
+      width: auto;
+      min-width: 88px;
+      margin-inline-start: 16px;
+      padding-inline: 16px;
+      background-color: var(--eb-ink);
+      color: #141516;
+    }
+
+    .eb-slate-play.media-button:focus-visible,
+    .eb-slate-play.media-button:hover {
+      background-color: var(--eb-ink-strong);
+    }
+
+    /* ---------- End of sequence ---------- */
+
+    .eb-end {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding-bottom: var(--eb-panel-height);
+      background-color: rgb(12 13 14 / 0.6);
+      pointer-events: none;
+    }
+
+    .eb-end-timecode {
+      font-family: var(--eb-font-mono);
+      font-size: 13px;
+      color: var(--eb-ink-muted);
+    }
+
+    .eb-end-label {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--eb-ink-strong);
+    }
+
+    /* ---------- Media offline ---------- */
+
+    .media-dialog-backdrop.eb-offline-backdrop {
+      background-color: var(--eb-offline);
+      opacity: 1;
+    }
+
+    .media-dialog-popup.eb-offline {
+      inset: 0;
+      width: 100%;
+      max-width: none;
+      height: 100%;
+      max-height: none;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 24px;
+      background-color: var(--eb-offline);
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      color: #fff;
+      text-align: start;
+      transform: none;
+      translate: none;
+    }
+
+    .eb-offline-label {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.15;
+    }
+
+    .media-dialog-title.eb-offline-title {
+      font-size: 15px;
+      font-weight: 600;
+      text-shadow: none;
+    }
+
+    .media-dialog-description.eb-offline-description {
+      max-width: 36rem;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #fff;
+      opacity: 1;
+    }
+
+    .media-dialog-close.eb-offline-close {
+      width: auto;
+      height: var(--eb-target);
+      padding-inline: 16px;
+      margin-top: 4px;
+      background-color: transparent;
+      border: 1.5px solid #fff;
+      border-radius: var(--eb-radius);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .media-dialog-close.eb-offline-close:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 3px;
+    }
+
+    /* ---------- Shortcuts sheet ---------- */
+
+    .eb-dialog-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      background-color: rgb(0 0 0 / 0.6);
+    }
+
+    .eb-shortcuts {
+      position: absolute;
+      inset: 10px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      max-width: 44rem;
+      margin-inline: auto;
+      background-color: #141516;
+      border: 1px solid var(--eb-line);
+      border-radius: var(--eb-radius);
+      color: var(--eb-ink);
+      overflow: hidden;
+    }
+
+    .eb-shortcuts-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 4px 4px 16px;
+      border-bottom: 1px solid var(--eb-line);
+    }
+
+    .eb-shortcuts-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .eb-shortcuts-groups {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+      gap: 16px 24px;
+      padding: 14px 16px 16px;
+      overflow: auto;
+    }
+
+    .eb-shortcuts-group-title {
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--eb-ink-quiet);
+    }
+
+    .eb-shortcuts-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .eb-shortcuts-item {
+      display: grid;
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+    }
+
+    .eb-shortcuts-keys {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .eb-key {
+      display: inline-grid;
+      place-items: center;
+      min-width: 24px;
+      height: 24px;
+      padding-inline: 6px;
+      background-color: var(--eb-panel-raised);
+      border: 1px solid var(--eb-line);
+      border-bottom-width: 2px;
+      border-radius: 3px;
+      font-family: var(--eb-font-mono);
+      font-size: 12px;
+      color: var(--eb-ink-strong);
+    }
+
+    .eb-key-range {
+      font-size: 12px;
+      color: var(--eb-ink-quiet);
+    }
+
+    .eb-shortcuts-label {
+      font-size: 13px;
+      color: var(--eb-ink);
+    }
+
+    /* ---------- Feedback ---------- */
+
+    .media-seek-indicator,
+    .media-volume-indicator,
+    .media-status-indicator {
+      font-family: var(--eb-font-mono);
+    }
+
+    /* ---------- Medium: 30rem and up ---------- */
+
+    @container media-root (width >= 30rem) {
+      .eb-timeline {
+        --eb-row-render: 4px;
+        --eb-row-ruler: 16px;
+        --eb-row-v1: 24px;
+      }
+
+      .eb-ruler,
+      .eb-clip-name {
+        display: block;
+      }
+
+      .eb-panel {
+        padding: 4px 12px 2px;
+      }
+
+      .eb-burn-in {
+        font-size: 16px;
+        padding: 4px 10px;
+      }
+
+      .eb-sequence-tab {
+        display: flex;
+      }
+
+      .eb-seek-button,
+      .eb-tools .media-captions-button,
+      .eb-tools .media-pip-button {
+        display: grid;
+      }
+
+      .eb-timecode-button {
+        font-size: 15px;
+      }
+
+      .eb-timecode-duration {
+        display: inline-flex;
+      }
+
+      .eb-slate {
+        display: grid;
+      }
+
+      .eb-slate-field-duration {
+        display: flex;
+      }
+    }
+
+    /* ---------- Full: 44rem and up ---------- */
+
+    @container media-root (width >= 44rem) {
+      .eb-timeline {
+        --eb-row-ruler: 18px;
+        --eb-row-v1: 30px;
+        --eb-row-a1: 18px;
+        --eb-header-width: 3rem;
+
+        column-gap: 8px;
+      }
+
+      .eb-track-headers {
+        display: grid;
+      }
+
+      .eb-lane-a1 {
+        display: block;
+      }
+
+      .eb-panel {
+        padding: 6px 16px 4px;
+      }
+
+      .eb-burn-in {
+        font-size: 20px;
+      }
+
+      .eb-frame-button,
+      .eb-shortcuts-button,
+      .eb-tools .media-airplay-button,
+      .eb-tools .media-cast-button {
+        display: grid;
+      }
+
+      .eb-volume-slider {
+        display: flex;
+      }
+
+      .eb-slate-field {
+        display: flex;
+      }
+
+      .eb-timecode-button {
+        font-size: 18px;
+      }
+
+      .eb-timecode-duration {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+/*
+ * The panel's height at each size, for the overlays that center above it and for captions, which rise above the panel
+ * while it shows. A container can't query its own width, so these land on the elements inside it.
+ */
+@layer base.preset {
+  @container media-root (width >= 30rem) {
+    .media-skin.eb-skin video,
+    .media-skin.eb-skin .eb-slate,
+    .media-skin.eb-skin .eb-end {
+      --eb-panel-height: 112px;
+    }
+  }
+
+  @container media-root (width >= 44rem) {
+    .media-skin.eb-skin video,
+    .media-skin.eb-skin .eb-slate,
+    .media-skin.eb-skin .eb-end {
+      --eb-panel-height: 150px;
+    }
+  }
+}
+
+@layer components {
+  .media-skin.eb-skin[data-controls-visible] video {
+    --media-caption-track-y: calc(var(--eb-panel-height) * -1 - 8px);
+  }
+}

@@ -10,12 +10,14 @@ const SRC = 'https://stream.mux.com/83EzHOvVzVN01AsrD01BCpiH02Pj3S8mfzBOu101w2nH
 const POSTER = 'https://image.mux.com/83EzHOvVzVN01AsrD01BCpiH02Pj3S8mfzBOu101w2nHC5s/thumbnail.webp?time=69';
 /** Chapters for the time slider, served from `apps/preview/public`. */
 const CHAPTERS = './cosmic-dawn-chapters.vtt';
+/** The source's frame rate, for Edit bay's timecode and frame steps. Browsers don't report it, so it's set here. */
+const FRAME_RATE = 30;
 
 /** `media` carries the workbench's playback options: autoplay, muted, loop, and preload. */
 export function Player({ media }: { media?: PlaybackProps }) {
   return (
     <VideoPlayer poster={POSTER}>
-      <VideoSkin>
+      <VideoSkin frameRate={FRAME_RATE}>
         <MuxVideo {...media} src={SRC} playsInline crossOrigin="">
           <track kind="chapters" label="English" srcLang="en" src={CHAPTERS} default />
         </MuxVideo>

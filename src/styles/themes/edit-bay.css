@@ -1,0 +1,69 @@
+@layer base.theme, base.preset, base.preferences;
+
+/*
+ * Edit bay tokens. Panels are neutral graphite because edit suites keep the interface neutral so it doesn't bias color
+ * judgment. One signal red marks the playhead, focus, and the offline state; it follows the public
+ * `--media-accent-color` property, so a host page can still change it.
+ */
+@layer base.preset {
+  .media-skin.eb-skin[data-theme="scaffold"] {
+    --eb-signal: var(--media-accent-color, #ff4a3d);
+    --eb-panel: #1c1d1f;
+    --eb-panel-raised: #26282b;
+    --eb-lane: #232527;
+    --eb-line: #3a3d41;
+    --eb-tick: #5a5e63;
+    --eb-ink: #e6e6e3;
+    --eb-ink-strong: #ffffff;
+    --eb-ink-muted: #c9ccd0;
+    --eb-ink-quiet: #9ea2a8;
+    --eb-render: #3fae6a;
+    --eb-offline: #b3261e;
+    --eb-clip-0: #e8b23a;
+    --eb-clip-1: #4fb3d9;
+    --eb-clip-2: #8fcf6a;
+    --eb-clip-3: #c792ea;
+    --eb-audio: #2f4a3a;
+    --eb-font-sans: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+    --eb-font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    --eb-radius: 3px;
+    --eb-target: 40px;
+    --eb-panel-height: 76px;
+
+    --media-font-family: var(--eb-font-sans);
+    --media-accent: var(--eb-signal);
+    --media-primary: var(--eb-ink);
+    --media-primary-foreground: #141516;
+    --media-ring: var(--eb-signal);
+    --media-popover: #141516;
+    --media-popover-foreground: var(--eb-ink);
+    --media-muted: var(--eb-line);
+    --media-button-highlight: rgb(255 255 255 / 0.12);
+    --media-control-radius: var(--eb-radius);
+    --media-menu-item-radius: 2px;
+    --media-popup-radius: var(--eb-radius);
+    --media-dialog-radius: 0px;
+    --media-caption-controls-y: calc(var(--eb-panel-height) * -1);
+  }
+
+  @media (pointer: coarse) {
+    .media-skin.eb-skin[data-theme="scaffold"] {
+      --eb-target: 44px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .media-skin.eb-skin[data-theme="scaffold"] {
+      --eb-signal: Highlight;
+      --eb-panel: Canvas;
+      --eb-panel-raised: Canvas;
+      --eb-lane: Canvas;
+      --eb-line: CanvasText;
+      --eb-tick: CanvasText;
+      --eb-ink: CanvasText;
+      --eb-ink-strong: CanvasText;
+      --eb-ink-muted: CanvasText;
+      --eb-ink-quiet: CanvasText;
+    }
+  }
+}
