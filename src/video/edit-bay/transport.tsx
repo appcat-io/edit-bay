@@ -1,6 +1,14 @@
 /** @jsxImportSource react */
 
-import { Tooltip, selectPlayback, selectPlaybackRate, selectTime, useHotkey, usePlayer } from '@videojs/react';
+import {
+  Tooltip,
+  selectPlayback,
+  selectPlaybackRate,
+  selectTextTrack,
+  selectTime,
+  useHotkey,
+  usePlayer,
+} from '@videojs/react';
 import type { ReactElement } from 'react';
 
 import { Button } from '../shared/button';
@@ -57,7 +65,11 @@ export function FrameStepButton({ direction }: { direction: 1 | -1 }) {
         aria-keyshortcuts={direction < 0 ? 'Comma' : 'Period'}
         onClick={() => step(direction)}
       >
-        {direction < 0 ? <FrameBackIcon className={'media-button-icon'} /> : <FrameForwardIcon className={'media-button-icon'} />}
+        {direction < 0 ? (
+          <FrameBackIcon className={'media-button-icon'} />
+        ) : (
+          <FrameForwardIcon className={'media-button-icon'} />
+        )}
       </Button>
     </KeyTooltip>
   );
@@ -65,7 +77,8 @@ export function FrameStepButton({ direction }: { direction: 1 | -1 }) {
 
 /**
  * Editing-software keys. J, K, and L shuttle: L plays, and each press while playing doubles the speed up to 4x; J slows
- * back down, then steps back 10 seconds; K pauses and returns to normal speed. Comma and period step one frame. True
+ * back down, then steps back 10 seconds; K pauses and returns to normal speed. Comma and period step one frame.
+ * Shift with the left and right arrows jumps between chapters. True
  * reverse playback isn't reliable in browsers, so J never plays backwards.
  */
 export function EditBayHotkeys({ disabled = false }: { disabled?: boolean }) {
@@ -124,8 +137,46 @@ export function EditBayHotkeys({ disabled = false }: { disabled?: boolean }) {
     },
   });
 
-  useHotkey({ keys: ',', disabled, action: 'frameBack', onActivate: () => step(-1) });
-  useHotkey({ keys: '.', disabled, action: 'frameForward', onActivate: () => step(1) });
+  // Shift with the arrow keys jumps between chapters, the timeline's clips. Going back first returns to the start
+  // of the current chapter, then to the one before, as a previous-track button does.
+  const chapters = usePlayer(selectTextTrack)?.chaptersCues ?? [];
+  const jumpChapter = (direction: 1 | -1) => {
+    if (!time || chapters.length === 0) return;
+    const now = time.currentTime;
+    const starts = chapters.map((cue) => cue.startTime);
+    const target =
+      direction > 0
+        ? starts.find((start) => start > now + 0.25)
+        : [...starts].reverse().find((start) => start < now - 2);
+    if (target !== undefined) void time.seek(target);
+    else if (direction < 0) void time.seek(0);
+  };
+
+  useHotkey({
+    keys: 'Shift+ArrowRight',
+    disabled,
+    action: 'nextChapter',
+    onActivate: () => jumpChapter(1),
+  });
+  useHotkey({
+    keys: 'Shift+ArrowLeft',
+    disabled,
+    action: 'previousChapter',
+    onActivate: () => jumpChapter(-1),
+  });
+
+  useHotkey({
+    keys: ',',
+    disabled,
+    action: 'frameBack',
+    onActivate: () => step(-1),
+  });
+  useHotkey({
+    keys: '.',
+    disabled,
+    action: 'frameForward',
+    onActivate: () => step(1),
+  });
 
   return null;
 }

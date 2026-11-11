@@ -23,6 +23,7 @@ const GROUPS: { title: string; keys: { keys: string[]; label: string }[] }[] = [
     title: 'Timeline',
     keys: [
       { keys: ['←', '→'], label: `Back or forward ${SEEK_STEP} seconds` },
+      { keys: ['Shift', '←', '→'], label: 'Previous or next chapter' },
       { keys: ['Home'], label: 'Start of sequence' },
       { keys: ['End'], label: 'End of sequence' },
       { keys: ['0', 'to', '9'], label: 'Jump to 0% through 90%' },

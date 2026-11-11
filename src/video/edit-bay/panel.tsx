@@ -1,6 +1,6 @@
 /** @jsxImportSource react */
 
-import { Controls, Tooltip, VolumeSlider } from '@videojs/react';
+import { Controls, Tooltip, VolumeSlider, selectPlaybackRate, selectQuality, usePlayer } from '@videojs/react';
 
 import { CaptionsToggle } from '../shared/captions-button';
 import { MuteButton } from '../shared/mute-button';
@@ -17,13 +17,29 @@ import { Timeline, type TimelineProps } from './timeline';
 import { FrameStepButton, SEEK_STEP } from './transport';
 import { Title } from '../shared/title';
 
+/** Formats a playback rate as editors show shuttle speed: 1×, 2×, 0.5×. */
+function formatSpeed(rate: number) {
+  return `${Math.round(rate * 100) / 100}×`;
+}
+
+/**
+ * The tab over the picture: sequence name, frame rate, shuttle speed, and the resolution now playing. The readouts
+ * are status only. Speed changes with J, K, and L or the settings menu; resolution with the settings menu.
+ */
 function SequenceTab() {
   const frameRate = useFrameRate();
+  const rate = usePlayer(selectPlaybackRate)?.playbackRate ?? 1;
+  const height = usePlayer(selectQuality)?.activeVideoRendition?.height;
+
   return (
     <div className={'eb-sequence-tab'}>
       <span className={'eb-sequence-dot'} aria-hidden="true" />
       <Title />
       <span className={'eb-sequence-rate'}>{formatFrameRate(frameRate)}</span>
+      <span className={'eb-sequence-speed'} data-shuttle={rate !== 1 ? '' : undefined}>
+        {formatSpeed(rate)}
+      </span>
+      {height ? <span className={'eb-sequence-resolution'}>{height}p</span> : null}
     </div>
   );
 }

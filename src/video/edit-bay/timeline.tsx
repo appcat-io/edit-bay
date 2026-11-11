@@ -10,6 +10,7 @@ import {
 import type { CSSProperties } from 'react';
 
 import { formatTimecode, useFrameRate } from './frame-rate';
+import { SubtitleLane, useSubtitlesShowing } from './subtitle-lane';
 
 /** Ruler steps, in seconds. The timeline uses the smallest one that gives at most six labels. */
 const RULER_STEPS = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
@@ -26,7 +27,7 @@ export interface TimelineProps {
 }
 
 /**
- * The timeline: a ruler, a V1 lane that shows each chapter as a clip, an A1 lane, a render bar for what has loaded,
+ * The timeline: a ruler, a V1 lane that shows each chapter as a clip, an S1 subtitle lane, an A1 lane, a render bar for what has loaded,
  * and a red playhead. The whole stack is one time slider, so a press anywhere on it moves the playhead, as in an
  * editor. Track headers sit outside the slider, so pressing them doesn't seek.
  */
@@ -39,6 +40,7 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
   const labels =
     step > 0 ? Array.from({ length: Math.floor(duration / step) + 1 }, (_, index) => index * step).filter((t) => t < duration) : [];
   const muted = Boolean(volume?.muted) || volume?.volume === 0;
+  const subtitles = useSubtitlesShowing();
   const rulerStyle = {
     '--eb-tick-step': step > 0 ? `${((step / 5) / duration) * 100}%` : '100%',
   } as CSSProperties;
@@ -48,6 +50,9 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
       <div className={'eb-track-headers'} aria-hidden="true">
         <span className={'eb-track-header eb-track-header-ruler'} />
         <span className={'eb-track-header eb-track-header-v1'}>V1</span>
+        <span className={'eb-track-header eb-track-header-s1'} data-muted={subtitles ? undefined : ''}>
+          S1
+        </span>
         <span className={'eb-track-header eb-track-header-a1'} data-muted={muted || undefined}>
           A1
         </span>
@@ -83,6 +88,8 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
             </div>
           )}
         />
+
+        <SubtitleLane />
 
         <div className={'eb-lane eb-lane-a1'} data-muted={muted || undefined} aria-hidden="true">
           <div className={'eb-audio-clip'} />

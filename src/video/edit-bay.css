@@ -99,11 +99,27 @@
       opacity: 1;
     }
 
-    .eb-sequence-rate {
+    .eb-sequence-rate,
+    .eb-sequence-speed,
+    .eb-sequence-resolution {
       flex-shrink: 0;
       font-family: var(--eb-font-mono);
       font-size: 12px;
+      font-variant-numeric: tabular-nums;
       color: var(--eb-ink-quiet);
+    }
+
+    /* While shuttling at 2× or 4×, the speed reads in full white on the signal color. */
+    .eb-sequence-speed[data-shuttle] {
+      padding-inline: 5px;
+      background-color: var(--eb-signal);
+      border-radius: 2px;
+      color: #141516;
+      font-weight: 600;
+    }
+
+    .eb-sequence-resolution {
+      display: none;
     }
 
     .eb-burn-in {
@@ -319,6 +335,7 @@
       --eb-row-render: 3px;
       --eb-row-ruler: 0px;
       --eb-row-v1: 12px;
+      --eb-row-s1: 0px;
       --eb-row-a1: 0px;
       --eb-row-gap: 3px;
       --eb-header-width: 0px;
@@ -331,7 +348,9 @@
 
     .eb-track-headers {
       display: none;
-      grid-template-rows: calc(var(--eb-row-render) + var(--eb-row-gap) + var(--eb-row-ruler)) var(--eb-row-v1) var(--eb-row-a1);
+      grid-template-rows:
+        calc(var(--eb-row-render) + var(--eb-row-gap) + var(--eb-row-ruler)) var(--eb-row-v1)
+        var(--eb-row-s1) var(--eb-row-a1);
       row-gap: var(--eb-row-gap);
     }
 
@@ -362,7 +381,7 @@
     .media-time-slider.eb-timeline-slider {
       grid-column: 2;
       display: grid;
-      grid-template-rows: var(--eb-row-render) var(--eb-row-ruler) var(--eb-row-v1) var(--eb-row-a1);
+      grid-template-rows: var(--eb-row-render) var(--eb-row-ruler) var(--eb-row-v1) var(--eb-row-s1) var(--eb-row-a1);
       row-gap: var(--eb-row-gap);
       align-items: stretch;
       height: auto;
@@ -385,8 +404,12 @@
       grid-row: 3;
     }
 
-    .eb-lane-a1 {
+    .eb-lane-s1 {
       grid-row: 4;
+    }
+
+    .eb-lane-a1 {
+      grid-row: 5;
     }
 
     .eb-render-bar {
@@ -495,8 +518,28 @@
       color: var(--eb-ink);
     }
 
-    .eb-lane-a1 {
+    .eb-lane-a1,
+    .eb-lane-s1 {
       display: none;
+    }
+
+    /* Subtitle blocks: one per run of subtitles, filling in as the stream loads them. */
+    .eb-subtitle-clip {
+      position: absolute;
+      inset-block: 2px;
+      min-width: 2px;
+      background-color: #6d87a6;
+    }
+
+    .eb-lane-s1[data-off] {
+      background-image: repeating-linear-gradient(135deg, var(--eb-line) 0 2px, transparent 2px 6px);
+    }
+
+    @media (forced-colors: active) {
+      .eb-subtitle-clip {
+        forced-color-adjust: none;
+        background-color: CanvasText;
+      }
     }
 
     .eb-audio-clip {
@@ -1072,10 +1115,43 @@
 
     /* ---------- Feedback ---------- */
 
-    .media-seek-indicator,
+    /* Seek, volume, and status feedback read as burn-in windows: white monospace on solid black. */
+    .media-indicator {
+      padding: 6px 10px;
+      background-color: #000;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      color: #fff;
+      font-family: var(--eb-font-mono);
+      font-size: 14px;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .media-seek-indicator {
+      flex-direction: row;
+      align-items: center;
+      margin-block-start: 52px;
+      align-self: flex-start;
+    }
+
+    .media-seek-indicator-icon {
+      display: none;
+    }
+
+    /* The offset reads as an editor writes it: a sign, then the amount. */
+    .media-seek-indicator[data-direction="forward"] .media-seek-indicator-value::before {
+      content: "+";
+    }
+
+    .media-seek-indicator[data-direction="backward"] .media-seek-indicator-value::before {
+      content: "\2212";
+    }
+
     .media-volume-indicator,
     .media-status-indicator {
-      font-family: var(--eb-font-mono);
+      margin-top: 52px;
     }
 
     /* ---------- Micro: under 22rem ---------- */
@@ -1204,6 +1280,10 @@
       .eb-timecode-duration {
         display: inline-flex;
       }
+
+      .eb-sequence-resolution {
+        display: inline;
+      }
     }
 
     /* ---------- Full: 44rem and up ---------- */
@@ -1212,6 +1292,7 @@
       .eb-timeline {
         --eb-row-ruler: 18px;
         --eb-row-v1: 30px;
+        --eb-row-s1: 12px;
         --eb-row-a1: 18px;
         --eb-header-width: 3rem;
 
@@ -1222,7 +1303,8 @@
         display: grid;
       }
 
-      .eb-lane-a1 {
+      .eb-lane-a1,
+      .eb-lane-s1 {
         display: block;
       }
 
@@ -1297,7 +1379,7 @@
     .media-skin.eb-skin video,
     .media-skin.eb-skin .eb-slate,
     .media-skin.eb-skin .eb-end {
-      --eb-panel-height: 150px;
+      --eb-panel-height: 166px;
     }
   }
 }
