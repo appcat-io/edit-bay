@@ -226,6 +226,18 @@
       border-bottom: 1px solid var(--eb-line);
     }
 
+    /* The header stays solid in every state. A see-through highlight would show the rows scrolling under it. */
+    .media-menu-back-item.eb-menu-close,
+    .media-menu-back-item.eb-menu-close[data-highlighted] {
+      min-height: 40px;
+      background-color: #141516;
+      z-index: 2;
+    }
+
+    .media-menu-back-item.eb-menu-close[data-highlighted] {
+      background-color: #2e3033;
+    }
+
     .eb-menu-close-title {
       font-weight: 600;
     }
