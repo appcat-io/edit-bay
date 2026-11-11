@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 
 import { selectBuffer, selectPlayback, selectTime, usePlayer } from '@videojs/react';
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
 /**
  * Clean feed is the broadcast term for a picture with nothing over it. While the video plays untouched, Edit bay
@@ -35,18 +35,44 @@ function writeStored(value: boolean) {
   }
 }
 
-export function CleanFeedProvider({ defaultCleanFeed, children }: { defaultCleanFeed: boolean; children: ReactNode }) {
+export function CleanFeedProvider({
+  defaultCleanFeed,
+  onChange,
+  children,
+}: {
+  defaultCleanFeed: boolean;
+  onChange?: (cleanFeed: boolean) => void;
+  children: ReactNode;
+}) {
   const [cleanFeed, setValue] = useState(defaultCleanFeed);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const mounted = useRef(false);
 
   // Read the viewer's saved choice after mount, so server-rendered markup matches the first client render.
   useEffect(() => {
     const stored = readStored();
-    if (stored !== null) setValue(stored);
+    if (stored !== null && stored !== defaultCleanFeed) {
+      setValue(stored);
+      onChangeRef.current?.(stored);
+    }
+    // Only on mount: the saved choice wins over the starting setting.
   }, []);
+
+  // If the site changes its setting later, that change applies and becomes the saved choice.
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    setValue(defaultCleanFeed);
+    writeStored(defaultCleanFeed);
+  }, [defaultCleanFeed]);
 
   const setCleanFeed = useCallback((value: boolean) => {
     setValue(value);
     writeStored(value);
+    onChangeRef.current?.(value);
   }, []);
 
   return <CleanFeedContext.Provider value={{ cleanFeed, setCleanFeed }}>{children}</CleanFeedContext.Provider>;

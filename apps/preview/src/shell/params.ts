@@ -31,6 +31,8 @@ export interface WorkbenchParams {
   muted: boolean;
   loop: boolean;
   preload: PreloadValue;
+  /** Edit bay: the skin's `cleanFeed` setting, with no progress line while playing. */
+  cleanFeed: boolean;
 }
 
 function oneOf<const Values extends readonly string[]>(values: Values, value: string | null, fallback: Values[number]) {
@@ -52,6 +54,7 @@ export function readParams(query: string): WorkbenchParams {
     muted: flag('muted'),
     loop: flag('loop'),
     preload: oneOf(PRELOAD_VALUES, params.get('preload'), 'metadata'),
+    cleanFeed: flag('cleanfeed'),
   };
 }
 
@@ -68,6 +71,7 @@ export function writeParams(value: WorkbenchParams): string {
     muted: flag(value.muted),
     loop: flag(value.loop),
     preload: value.preload,
+    cleanfeed: flag(value.cleanFeed),
   }).toString();
 }
 

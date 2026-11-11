@@ -2,7 +2,7 @@ import { SidebarProvider } from '@preview/shell/components/ui/sidebar';
 import { type CSSProperties, useEffect, useId, useRef, useState } from 'react';
 
 import { skin } from './config';
-import { PARAMS_MESSAGE } from './messages';
+import { CLEAN_FEED_MESSAGE, PARAMS_MESSAGE } from './messages';
 import { Navbar } from './navbar';
 import { OptionsPanel } from './options-panel';
 import { readParams, writeParams, type WorkbenchParams } from './params';
@@ -32,6 +32,16 @@ export function App() {
     writeUrl(`?${query}`);
     frame.current?.contentWindow?.postMessage({ type: PARAMS_MESSAGE, query }, location.origin);
   }, [query]);
+
+  // The player's own settings menu can switch clean feed; keep the sidebar switch in step with it.
+  useEffect(() => {
+    const receive = (event: MessageEvent) => {
+      if (event.origin !== location.origin || event.data?.type !== CLEAN_FEED_MESSAGE) return;
+      setParams((current) => ({ ...current, cleanFeed: Boolean(event.data.value) }));
+    };
+    window.addEventListener('message', receive);
+    return () => window.removeEventListener('message', receive);
+  }, []);
 
   // The scheme control drives the shell too, so its chrome matches what the preview shows.
   useEffect(() => {

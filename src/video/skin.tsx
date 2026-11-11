@@ -32,6 +32,8 @@ export interface VideoSkinProps extends Omit<ContainerPrimitive.Props, 'children
    * settings menu, and their choice is remembered in the browser. Defaults to false.
    */
   cleanFeed?: boolean;
+  /** Called when the viewer switches clean feed in the settings menu, or a saved choice is restored. */
+  onCleanFeedChange?: (cleanFeed: boolean) => void;
   /** The source's frame rate. Browsers don't report it, and timecode and frame steps depend on it. Defaults to 30. */
   frameRate?: number;
   renderPoster?: PosterPrimitive.ImageProps['render'];
@@ -42,6 +44,7 @@ export function VideoSkin({
   children,
   className,
   cleanFeed = false,
+  onCleanFeedChange,
   frameRate = 30,
   renderPoster,
   renderThumbnail,
@@ -49,7 +52,7 @@ export function VideoSkin({
 }: VideoSkinProps = {}) {
   return (
     <FrameRateProvider frameRate={frameRate}>
-      <CleanFeedProvider defaultCleanFeed={cleanFeed}>
+      <CleanFeedProvider defaultCleanFeed={cleanFeed} onChange={onCleanFeedChange}>
         <SkinContainer className={className} renderPoster={renderPoster} renderThumbnail={renderThumbnail} {...props}>
           {children}
         </SkinContainer>
@@ -64,7 +67,7 @@ function SkinContainer({
   renderPoster,
   renderThumbnail,
   ...props
-}: Omit<VideoSkinProps, 'frameRate' | 'cleanFeed'>) {
+}: Omit<VideoSkinProps, 'frameRate' | 'cleanFeed' | 'onCleanFeedChange'>) {
   const { cleanFeed } = useCleanFeed();
 
   return (

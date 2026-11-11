@@ -17,7 +17,7 @@ function Preview() {
     // The provider loads Video.js's built-in translations for the selected language.
     <I18nProvider locale={params.locale}>
       <div className="preview-player" style={playerStyles(params) as CSSProperties}>
-        <Player media={playbackProps(params)} />
+        <Player media={playbackProps(params)} cleanFeed={params.cleanFeed} />
       </div>
     </I18nProvider>
   );

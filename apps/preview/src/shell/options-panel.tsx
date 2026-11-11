@@ -145,6 +145,14 @@ export function OptionsPanel({ id, params, onParamsChange, preferences }: Option
           />
         </Section>
 
+        <Section title="Skin">
+          <SwitchItem
+            label="Clean feed"
+            checked={params.cleanFeed}
+            onChange={(cleanFeed) => onParamsChange({ cleanFeed })}
+          />
+        </Section>
+
         <Section title="Detected preferences">
           <PreferenceBadges preferences={preferences} />
         </Section>
