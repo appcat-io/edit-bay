@@ -17,8 +17,10 @@ import { QualityRadioGroup } from '@videojs/react/ui/quality-radio-group';
 
 import { cn } from '@/lib/resolve-class-name';
 
+import { useCleanFeed } from '../edit-bay/clean-feed';
+import { CleanFeedIcon } from '../edit-bay/icons';
 import { Button } from './button';
-import { RadioItem } from './menu-item';
+import { CheckboxItem, RadioItem } from './menu-item';
 import { ButtonTooltip } from './tooltip';
 
 function MenuChevron({ back = false }: { back?: boolean } = {}) {
@@ -157,6 +159,20 @@ function CaptionsMenu() {
   );
 }
 
+/** Viewer switch for clean feed: no progress line over the picture while the video plays. */
+function CleanFeedItem() {
+  const { cleanFeed, setCleanFeed } = useCleanFeed();
+  return (
+    <CheckboxItem checked={cleanFeed} onCheckedChange={setCleanFeed}>
+      <CleanFeedIcon className={'media-menu-trigger-icon'} />
+      <span className={'eb-menu-label'}>
+        <span>Clean feed</span>
+        <span className={'eb-menu-note'}>No progress line while playing</span>
+      </span>
+    </CheckboxItem>
+  );
+}
+
 export function SettingsMenu() {
   return (
     <Menu.Root side="top" align="center">
@@ -174,6 +190,8 @@ export function SettingsMenu() {
           <AudioTrackMenu />
           <PlaybackRateMenu />
           <CaptionsMenu />
+          <Menu.Separator className={'media-menu-separator'} />
+          <CleanFeedItem />
         </Menu.Content>
       </Menu.Popup>
     </Menu.Root>

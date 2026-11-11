@@ -5,9 +5,11 @@
  * timeline and transport. Layered over the Scaffold skin, which keeps menus, tooltips, dialogs, indicators, and
  * forced-colors support. Sizes follow the player's own width through the `media-root` container.
  *
- *   compact  < 30rem   timeline bar, play, timecode, mute, menu, full screen
- *   medium  >= 30rem   adds the ruler, V1 clip names, 10-second seeks, subtitles, pop-out
- *   full    >= 44rem   adds track headers, A1, frame steps, volume fader, shortcuts, AirPlay and Cast
+ *   micro    < 22rem   one row: play, mute, menu, full screen, with the timeline as a thin bar on its top edge
+ *   compact >= 22rem   timeline bar, play, timecode, mute, menu, full screen
+ *   medium  >= 30rem   adds the ruler, V1 clip names, 10-second seeks, subtitles; pop-out at 36rem, duration at 40rem
+ *   full    >= 44rem   adds track headers, A1, shortcuts; frame-step buttons at 50rem
+ *   wide    >= 62rem   adds the volume fader, AirPlay and Cast
  */
 @layer components {
   @scope (.media-skin.eb-skin[data-theme="scaffold"][data-preset="video"]) {
@@ -44,10 +46,12 @@
       height: 22px;
     }
 
+    /* Focus: a white inner ring, a red outer ring, and a fill. Two tones keep it visible on any background. */
     .media-button:focus-visible {
-      outline: 2px solid var(--eb-signal);
+      outline: 3px solid var(--eb-signal);
       outline-offset: 2px;
-      background-color: var(--media-button-highlight);
+      box-shadow: inset 0 0 0 2px var(--eb-ink-strong);
+      background-color: rgb(255 255 255 / 0.2);
     }
 
     /* ---------- Top: sequence tab and burned-in timecode ---------- */
@@ -142,6 +146,81 @@
         opacity: 0;
         pointer-events: none;
       }
+    }
+
+    /* ---------- Hairline ---------- */
+
+    /* While the panel is hidden during playback, a 3px line keeps progress in view. Clean feed removes it. */
+    .eb-hairline {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 1;
+      height: 3px;
+      background-color: rgb(0 0 0 / 0.55);
+      opacity: 1;
+      pointer-events: none;
+      transition: opacity var(--media-duration-controls) ease;
+    }
+
+    :scope[data-controls-visible] .eb-hairline,
+    :scope[data-clean-feed] .eb-hairline {
+      opacity: 0;
+    }
+
+    .eb-hairline-loaded,
+    .eb-hairline-played {
+      position: absolute;
+      inset-block: 0;
+      left: 0;
+    }
+
+    .eb-hairline-loaded {
+      background-color: var(--eb-render);
+    }
+
+    .eb-hairline-played {
+      background-color: var(--eb-signal);
+    }
+
+    @media (forced-colors: active) {
+      .eb-hairline {
+        forced-color-adjust: none;
+        background-color: Canvas;
+      }
+
+      .eb-hairline-loaded {
+        background-color: GrayText;
+      }
+
+      .eb-hairline-played {
+        background-color: Highlight;
+      }
+    }
+
+    /* ---------- Clean feed menu item ---------- */
+
+    .eb-menu-checkbox-item {
+      min-height: calc(var(--media-spacing) * 11);
+    }
+
+    .eb-menu-label {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 1px;
+      text-align: start;
+      white-space: nowrap;
+    }
+
+    .eb-menu-note {
+      font-size: 12px;
+      color: var(--eb-ink-quiet);
+    }
+
+    .eb-menu-checkbox-item {
+      justify-content: flex-start;
+      padding-block: calc(var(--media-spacing) * 1.5);
     }
 
     /* ---------- Timeline ---------- */
@@ -372,8 +451,9 @@
     }
 
     .media-time-slider-thumb.eb-playhead:focus-visible {
-      outline: 2px solid var(--eb-ink-strong);
+      outline: 3px solid var(--eb-ink-strong);
       outline-offset: 2px;
+      background-color: rgb(255 255 255 / 0.2);
     }
 
     @media (forced-colors: active) {
@@ -438,7 +518,8 @@
 
     .eb-transport-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      /* Side columns never shrink below their content, so the groups can't slide over each other. */
+      grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
       align-items: center;
       gap: 8px;
       min-height: calc(var(--eb-target) + 4px);
@@ -475,8 +556,10 @@
     }
 
     .eb-timecode-button:focus-visible {
-      outline: 2px solid var(--eb-signal);
+      outline: 3px solid var(--eb-signal);
       outline-offset: 2px;
+      box-shadow: inset 0 0 0 2px var(--eb-ink-strong);
+      background-color: rgb(255 255 255 / 0.2);
     }
 
     .eb-timecode-duration {
@@ -485,6 +568,10 @@
       font-size: 12px;
       color: var(--eb-ink-quiet);
       white-space: nowrap;
+    }
+
+    .eb-timecode-duration[hidden] {
+      display: none;
     }
 
     .eb-transport {
@@ -512,6 +599,7 @@
 
     .eb-play-button.media-button:focus-visible {
       background-color: var(--eb-ink-strong);
+      box-shadow: inset 0 0 0 2px #141516;
     }
 
     .eb-tools {
@@ -574,8 +662,9 @@
     }
 
     .eb-volume-thumb:focus-visible {
-      outline: 2px solid var(--eb-signal);
-      outline-offset: 2px;
+      outline: 3px solid var(--eb-signal);
+      outline-offset: 3px;
+      background-color: var(--eb-ink-strong);
     }
 
     /* Visually hidden, not removed: the label is the settings button's accessible name. */
@@ -605,6 +694,8 @@
     }
 
     .media-menu-popup {
+      /* Room for the fifth row (clean feed) before the menu starts to scroll. */
+      max-height: min(var(--media-menu-available-height, 18rem), 18rem);
       background-color: #141516;
       border: 1px solid var(--eb-line);
       border-radius: var(--eb-radius);
@@ -691,6 +782,10 @@
     .eb-slate-play.media-button:focus-visible,
     .eb-slate-play.media-button:hover {
       background-color: var(--eb-ink-strong);
+    }
+
+    .eb-slate-play.media-button:focus-visible {
+      box-shadow: inset 0 0 0 2px #141516;
     }
 
     /* ---------- End of sequence ---------- */
@@ -892,6 +987,77 @@
       font-family: var(--eb-font-mono);
     }
 
+    /* ---------- Micro: under 22rem ---------- */
+
+    /* One row: play, mute, settings, full screen. The timeline is a thin bar on the panel's top edge with a taller
+       invisible grab area. The burned-in timecode over the picture carries the time. */
+    @container media-root (width < 22rem) {
+      .eb-panel {
+        gap: 0;
+        padding: 0 4px;
+      }
+
+      .eb-timeline {
+        --eb-row-render: 2px;
+        --eb-row-v1: 4px;
+        --eb-row-gap: 1px;
+
+        padding-block-start: 0;
+        margin-inline: -4px;
+      }
+
+      .media-time-slider.eb-timeline-slider {
+        position: relative;
+        padding-block: 0;
+      }
+
+      .media-time-slider.eb-timeline-slider::after {
+        content: "";
+        position: absolute;
+        inset: -14px 0 -4px;
+      }
+
+      .eb-clip {
+        padding: 0;
+        border-top-width: 4px;
+      }
+
+      .media-time-slider-thumb.eb-playhead::before {
+        top: -6px;
+        left: 2px;
+        width: 10px;
+        height: 7px;
+      }
+
+      .eb-transport-row {
+        grid-template-columns: auto minmax(max-content, 1fr);
+        gap: 0;
+        min-height: var(--eb-target);
+      }
+
+      /* Hidden visually only: the spoken time stays available to screen readers. */
+      .eb-timecode {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+      }
+
+      .eb-timecode-button {
+        display: none;
+      }
+
+      .eb-top {
+        padding: 6px;
+      }
+
+      .eb-burn-in {
+        font-size: 12px;
+        padding: 2px 6px;
+      }
+    }
+
     /* ---------- Medium: 30rem and up ---------- */
 
     @container media-root (width >= 30rem) {
@@ -920,17 +1086,12 @@
       }
 
       .eb-seek-button,
-      .eb-tools .media-captions-button,
-      .eb-tools .media-pip-button {
+      .eb-tools .media-captions-button {
         display: grid;
       }
 
       .eb-timecode-button {
         font-size: 15px;
-      }
-
-      .eb-timecode-duration {
-        display: inline-flex;
       }
 
       .eb-slate {
@@ -939,6 +1100,18 @@
 
       .eb-slate-field-duration {
         display: flex;
+      }
+    }
+
+    @container media-root (width >= 36rem) {
+      .eb-tools .media-pip-button {
+        display: grid;
+      }
+    }
+
+    @container media-root (width >= 40rem) {
+      .eb-timecode-duration {
+        display: inline-flex;
       }
     }
 
@@ -970,15 +1143,8 @@
         font-size: 20px;
       }
 
-      .eb-frame-button,
-      .eb-shortcuts-button,
-      .eb-tools .media-airplay-button,
-      .eb-tools .media-cast-button {
+      .eb-shortcuts-button {
         display: grid;
-      }
-
-      .eb-volume-slider {
-        display: flex;
       }
 
       .eb-slate-field {
@@ -993,6 +1159,26 @@
         font-size: 13px;
       }
     }
+
+    /* Frame-step buttons need 50rem. Below that, comma and period still step frames. */
+    @container media-root (width >= 50rem) {
+      .eb-frame-button {
+        display: grid;
+      }
+    }
+
+    /* ---------- Wide: 62rem and up ---------- */
+
+    @container media-root (width >= 62rem) {
+      .eb-volume-slider {
+        display: flex;
+      }
+
+      .eb-tools .media-airplay-button,
+      .eb-tools .media-cast-button {
+        display: grid;
+      }
+    }
   }
 }
 
@@ -1001,6 +1187,13 @@
  * while it shows. A container can't query its own width, so these land on the elements inside it.
  */
 @layer base.preset {
+  @container media-root (width < 22rem) {
+    .media-skin.eb-skin video,
+    .media-skin.eb-skin .eb-end {
+      --eb-panel-height: 50px;
+    }
+  }
+
   @container media-root (width >= 30rem) {
     .media-skin.eb-skin video,
     .media-skin.eb-skin .eb-slate,

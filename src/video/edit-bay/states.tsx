@@ -1,6 +1,6 @@
 /** @jsxImportSource react */
 
-import { selectMetadata, selectPlayback, selectTextTrack, usePlayer } from '@videojs/react';
+import { selectMetadata, selectPlayback, selectTextTrack, selectTime, usePlayer } from '@videojs/react';
 
 import { PlayButton } from '../shared/play-button';
 import { formatFrameRate, useFrameRate } from './frame-rate';
@@ -14,9 +14,13 @@ export function Slate() {
   const playback = usePlayer(selectPlayback);
   const metadata = usePlayer(selectMetadata);
   const tracks = usePlayer(selectTextTrack);
+  const time = usePlayer(selectTime);
   const frameRate = useFrameRate();
 
   if (!playback || playback.started) return null;
+
+  // With preload off, the browser doesn't know the length until playback starts.
+  const hasDuration = (time?.duration ?? 0) > 0;
 
   const chapters = tracks?.chaptersCues?.length ?? 0;
 
@@ -29,12 +33,14 @@ export function Slate() {
             <dt>Sequence</dt>
             <dd>{metadata?.title || 'Untitled sequence'}</dd>
           </div>
-          <div className={'eb-slate-field eb-slate-field-duration'}>
-            <dt>Duration</dt>
-            <dd className={'eb-mono'}>
-              <TimecodeText type="duration" />
-            </dd>
-          </div>
+          {hasDuration && (
+            <div className={'eb-slate-field eb-slate-field-duration'}>
+              <dt>Duration</dt>
+              <dd className={'eb-mono'}>
+                <TimecodeText type="duration" />
+              </dd>
+            </div>
+          )}
           <div className={'eb-slate-field'}>
             <dt>Frame rate</dt>
             <dd className={'eb-mono'}>{formatFrameRate(frameRate)}</dd>

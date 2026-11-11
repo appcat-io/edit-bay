@@ -35,6 +35,8 @@ export function BurnIn() {
  */
 export function TimecodeReadout() {
   const [remaining, setRemaining] = useState(false);
+  const time = usePlayer(selectTime);
+  const hasDuration = (time?.duration ?? 0) > 0;
 
   return (
     <div className={'eb-timecode'}>
@@ -49,7 +51,7 @@ export function TimecodeReadout() {
           <TimecodeText type={remaining ? 'remaining' : 'current'} />
         </span>
       </button>
-      <span className={'eb-timecode-duration'} aria-hidden="true">
+      <span className={'eb-timecode-duration'} aria-hidden="true" hidden={!hasDuration}>
         <span className={'eb-timecode-slash'}>/</span>
         <TimecodeText type="duration" />
       </span>
