@@ -165,6 +165,12 @@ h1 {
   margin-bottom: 16px;
 }
 
+/* Reserve the film's shape (1920×800) before its metadata loads, so the page doesn't jump when it does. Change this
+   if the page plays different media. */
+.site-player .media-skin {
+  aspect-ratio: 1920 / 800;
+}
+
 .site-credit {
   margin: 10px 0 0;
   font-size: 13px;
