@@ -29,7 +29,9 @@ function formatSpeed(rate: number) {
 function SequenceTab() {
   const frameRate = useFrameRate();
   const rate = usePlayer(selectPlaybackRate)?.playbackRate ?? 1;
-  const height = usePlayer(selectQuality)?.activeVideoRendition?.height;
+  const rendition = usePlayer(selectQuality)?.activeVideoRendition;
+  // Width and height, as an editor shows a sequence's frame size. Height alone misreads widescreen sources.
+  const frameSize = rendition?.width && rendition.height ? `${rendition.width}×${rendition.height}` : null;
 
   return (
     <div className={'eb-sequence-tab'}>
@@ -39,7 +41,7 @@ function SequenceTab() {
       <span className={'eb-sequence-speed'} data-shuttle={rate !== 1 ? '' : undefined}>
         {formatSpeed(rate)}
       </span>
-      {height ? <span className={'eb-sequence-resolution'}>{height}p</span> : null}
+      {frameSize ? <span className={'eb-sequence-resolution'}>{frameSize}</span> : null}
     </div>
   );
 }

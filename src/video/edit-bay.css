@@ -460,6 +460,11 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* Below the full layout there is room for every other label only. */
+    .eb-ruler-label:nth-child(even) {
+      display: none;
+    }
+
     .eb-lane {
       position: relative;
       background-color: var(--eb-lane);
@@ -1313,6 +1318,10 @@
 
       .eb-track-headers {
         display: grid;
+      }
+
+      .eb-ruler-label:nth-child(even) {
+        display: block;
       }
 
       .eb-lane-a1,

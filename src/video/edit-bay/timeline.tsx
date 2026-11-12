@@ -12,12 +12,15 @@ import type { CSSProperties } from 'react';
 import { formatTimecode, useFrameRate } from './frame-rate';
 import { SubtitleLane, useSubtitlesShowing } from './subtitle-lane';
 
-/** Ruler steps, in seconds. The timeline uses the smallest one that gives at most six labels. */
+/** Ruler steps, in seconds. The timeline uses the smallest one that gives at most eight labels. */
 const RULER_STEPS = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
 
 function rulerStep(duration: number) {
-  return RULER_STEPS.find((step) => duration / step <= 6) ?? 3600;
+  return RULER_STEPS.find((step) => duration / step <= 8) ?? 3600;
 }
+
+/** Labels start at their tick and run right, so one in the last tenth of the ruler would be cut off at its edge. */
+const RULER_LABEL_LIMIT = 0.9;
 
 /** Chapter clips cycle through four marker colors, as editors color-code clips. */
 const CLIP_COLORS = 4;
@@ -38,7 +41,7 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
   const duration = time?.duration ?? 0;
   const step = duration > 0 ? rulerStep(duration) : 0;
   const labels =
-    step > 0 ? Array.from({ length: Math.floor(duration / step) + 1 }, (_, index) => index * step).filter((t) => t < duration) : [];
+    step > 0 ? Array.from({ length: Math.floor(duration / step) + 1 }, (_, index) => index * step).filter((t) => t <= duration * RULER_LABEL_LIMIT) : [];
   const muted = Boolean(volume?.muted) || volume?.volume === 0;
   const subtitles = useSubtitlesShowing();
   const rulerStyle = {

@@ -18,6 +18,13 @@ function Preview() {
     <I18nProvider locale={params.locale}>
       <div className="preview-player" style={playerStyles(params) as CSSProperties}>
         <Player media={playbackProps(params)} cleanFeed={params.cleanFeed} />
+        {/* The film's license asks for this credit wherever it is shown. */}
+        <p className="preview-credit">
+          Tears of Steel. (CC) Blender Foundation |{' '}
+          <a href="https://mango.blender.org" target="_blank" rel="noreferrer">
+            mango.blender.org
+          </a>
+        </p>
       </div>
     </I18nProvider>
   );

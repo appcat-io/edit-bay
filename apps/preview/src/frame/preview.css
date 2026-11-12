@@ -34,3 +34,14 @@ audio-player,
 live-audio-player {
   display: contents;
 }
+
+/* Credit for the film the preview plays. Part of the page, not the skin. */
+.preview-credit {
+  margin: 10px 0 0;
+  font: 13px/1.4 system-ui, sans-serif;
+  color: light-dark(#52525b, #a1a1aa);
+}
+
+.preview-credit a {
+  color: inherit;
+}
