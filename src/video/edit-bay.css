@@ -274,49 +274,44 @@
     }
 
     /* On a player under 30rem the menu would be taller than the picture, so the menu component adds `eb-menu-sheet`
-       and it fills the whole player instead of a corner. The popup is positioned against the player's own anchor.
-       Browsers without anchor positioning keep the corner menu, which scrolls. */
-    @supports (anchor-name: --eb-player) and (anchor-scope: --eb-player) {
-      :scope {
-        anchor-name: --eb-player;
-        anchor-scope: --eb-player;
-      }
+       and it fills the whole player instead of a corner. The component measures the player and sets `--eb-sheet-*`
+       on the skin; the popup sits in the top layer, so fixed positioning places it over the player in every browser. */
+    .media-popup.media-menu-popup.eb-menu-sheet {
+      position: fixed !important;
+      inset: auto !important;
+      top: var(--eb-sheet-top, 0px) !important;
+      left: var(--eb-sheet-left, 0px) !important;
+      width: var(--eb-sheet-width, 100vw) !important;
+      height: var(--eb-sheet-height, 100vh) !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      max-height: none !important;
+      margin: 0 !important;
+      translate: none !important;
+      transform: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
 
-      .media-popup.media-menu-popup.eb-menu-sheet {
-        top: anchor(--eb-player top) !important;
-        right: anchor(--eb-player right) !important;
-        bottom: anchor(--eb-player bottom) !important;
-        left: anchor(--eb-player left) !important;
-        width: auto;
-        min-width: 0;
-        max-width: none;
-        height: auto;
-        max-height: none;
-        translate: none !important;
-        transform: none;
-        border-radius: 0;
-        box-shadow: none;
-      }
+    .media-popup.media-menu-popup.eb-menu-sheet .media-menu-content {
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      max-height: none;
+      /* The sheet scrolls down only. Rows shrink to the sheet's width instead of pushing it sideways. */
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--eb-tick) transparent;
+    }
 
-      .media-popup.media-menu-popup.eb-menu-sheet .media-menu-content {
-        width: 100%;
-        min-width: 0;
-        height: 100%;
-        /* The sheet scrolls down only. Rows shrink to the sheet's width instead of pushing it sideways. */
-        overflow-x: hidden;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--eb-tick) transparent;
-      }
+    .eb-menu-sheet .eb-menu-label {
+      min-width: 0;
+      white-space: normal;
+    }
 
-      .eb-menu-sheet .eb-menu-label {
-        min-width: 0;
-        white-space: normal;
-      }
-
-      .eb-menu-sheet :is(.media-menu-item, .media-menu-radio-item, .media-menu-back-item) {
-        min-width: 0;
-      }
+    .eb-menu-sheet :is(.media-menu-item, .media-menu-radio-item, .media-menu-back-item) {
+      min-width: 0;
     }
 
     /* ---------- Clean feed menu item ---------- */

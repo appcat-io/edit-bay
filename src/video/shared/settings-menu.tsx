@@ -181,13 +181,16 @@ const SHEET_BELOW_REM = 30;
 /**
  * True while the player is too small for a corner menu. Measured from the skin's own width, so it follows the player
  * and not the window. The Close row only renders in sheet mode, so it never takes keyboard focus on larger players.
+ *
+ * In sheet mode the player's box on screen is written to `--eb-sheet-*` properties on the skin. The popup inherits
+ * them and covers the player with fixed positioning, which works in every browser, unlike CSS anchor scoping.
  */
 function useSheetMode() {
   const probe = useRef<HTMLSpanElement>(null);
   const [sheet, setSheet] = useState(false);
 
   useEffect(() => {
-    const skin = probe.current?.closest('.media-skin');
+    const skin = probe.current?.closest<HTMLElement>('.media-skin');
     if (!skin || typeof ResizeObserver === 'undefined') return;
     const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const observer = new ResizeObserver(([entry]) => {
@@ -196,6 +199,28 @@ function useSheetMode() {
     observer.observe(skin);
     return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    const skin = probe.current?.closest<HTMLElement>('.media-skin');
+    if (!skin || !sheet) return;
+    const place = () => {
+      const box = skin.getBoundingClientRect();
+      skin.style.setProperty('--eb-sheet-top', `${box.top}px`);
+      skin.style.setProperty('--eb-sheet-left', `${box.left}px`);
+      skin.style.setProperty('--eb-sheet-width', `${box.width}px`);
+      skin.style.setProperty('--eb-sheet-height', `${box.height}px`);
+    };
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(skin);
+    window.addEventListener('resize', place);
+    window.addEventListener('scroll', place, { capture: true, passive: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', place);
+      window.removeEventListener('scroll', place, { capture: true });
+    };
+  }, [sheet]);
 
   return { probe, sheet };
 }

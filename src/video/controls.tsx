@@ -3,9 +3,9 @@
 import { Controls } from '@videojs/react';
 
 import { EditBayPanel } from './edit-bay/panel';
-import type { ThumbnailSlot } from './shared/time-slider';
+import type { TimelineProps } from './edit-bay/timeline';
 
-export function VideoControls({ renderThumbnail }: ThumbnailSlot = {}) {
+export function VideoControls({ renderThumbnail }: TimelineProps = {}) {
   return (
     <Controls.Root>
       <EditBayPanel renderThumbnail={renderThumbnail} />
