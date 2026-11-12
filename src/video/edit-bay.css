@@ -17,6 +17,25 @@
       font-family: var(--eb-font-sans);
     }
 
+    /*
+     * Time runs left to right in every language, so the timeline, transport, timecode, and readouts never mirror.
+     * This is the convention for media controls. Menus, tooltips, and dialogs carry translated text, so on a
+     * right-to-left page they read right to left.
+     */
+    .eb-top,
+    .eb-panel,
+    .eb-slate,
+    .eb-end,
+    .eb-hairline,
+    .eb-shortcuts,
+    .media-indicator {
+      direction: ltr;
+    }
+
+    :scope:dir(rtl) :is(.media-menu-popup, .media-tooltip-popup, .media-dialog-popup) {
+      direction: rtl;
+    }
+
     .eb-sr-only {
       position: absolute;
       width: 1px;
@@ -744,6 +763,24 @@
     @media (hover: hover) {
       .eb-play-button.media-button:hover {
         background-color: var(--eb-ink-strong);
+      }
+    }
+
+    /* In forced colors the light fill is dropped, so the button takes the system's button colors and a border. */
+    @media (forced-colors: active) {
+      .eb-play-button.media-button,
+      .eb-slate-play.media-button {
+        background-color: ButtonFace;
+        border: 1px solid ButtonText;
+        color: ButtonText;
+      }
+
+      .eb-clip {
+        border-inline-start: 1px solid CanvasText;
+      }
+
+      .eb-panel {
+        border-top-color: CanvasText;
       }
     }
 
