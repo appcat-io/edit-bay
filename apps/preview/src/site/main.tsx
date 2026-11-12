@@ -159,7 +159,7 @@ function Site() {
           Built on <a href="https://videojs.org">Video.js</a> v10. Apache 2.0.
         </p>
         <p>
-          By <a href="https://appcat.io">AppCat</a>
+          By <a href="https://appcat.io">Appcat</a>
         </p>
       </footer>
     </>
