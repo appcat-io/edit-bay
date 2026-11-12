@@ -175,12 +175,10 @@
       transition: opacity var(--media-duration-controls) ease;
     }
 
-    @scope (.video-controls-content) {
-      &:not([data-visible]) .eb-panel,
-      &:not([data-visible]) .eb-top {
-        opacity: 0;
-        pointer-events: none;
-      }
+    .video-controls-content:not([data-visible]) .eb-panel,
+    .video-controls-content:not([data-visible]) .eb-top {
+      opacity: 0;
+      pointer-events: none;
     }
 
     /* ---------- Hairline ---------- */

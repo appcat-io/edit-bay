@@ -232,13 +232,11 @@
       align-self: flex-start;
     }
 
-    @scope (.media-status-indicator) {
-      &[data-status="captions-off"] .media-status-indicator-captions-off-icon,
-      &[data-status="captions-on"] .media-status-indicator-captions-on-icon,
-      &[data-status="fullscreen"] .media-status-indicator-fullscreen-enter-icon,
-      &[data-status="exit-fullscreen"] .media-status-indicator-fullscreen-exit-icon {
-        display: block;
-      }
+    .media-status-indicator[data-status="captions-off"] .media-status-indicator-captions-off-icon,
+    .media-status-indicator[data-status="captions-on"] .media-status-indicator-captions-on-icon,
+    .media-status-indicator[data-status="fullscreen"] .media-status-indicator-fullscreen-enter-icon,
+    .media-status-indicator[data-status="exit-fullscreen"] .media-status-indicator-fullscreen-exit-icon {
+      display: block;
     }
 
     .media-status-indicator-icon {
@@ -248,11 +246,9 @@
       display: none;
     }
 
-    @scope (.media-status-indicator) {
-      &[data-status="pip"] .media-status-indicator-pip-enter-icon,
-      &[data-status="exit-pip"] .media-status-indicator-pip-exit-icon {
-        display: block;
-      }
+    .media-status-indicator[data-status="pip"] .media-status-indicator-pip-enter-icon,
+    .media-status-indicator[data-status="exit-pip"] .media-status-indicator-pip-exit-icon {
+      display: block;
     }
 
     .media-volume-indicator {
@@ -272,10 +268,8 @@
       flex-direction: row-reverse;
     }
 
-    @scope (.media-volume-indicator) {
-      &[data-level="high"] .media-volume-indicator-high-icon {
-        display: block;
-      }
+    .media-volume-indicator[data-level="high"] .media-volume-indicator-high-icon {
+      display: block;
     }
 
     .media-volume-indicator-icon {
@@ -285,11 +279,9 @@
       display: none;
     }
 
-    @scope (.media-volume-indicator) {
-      &[data-level="low"] .media-volume-indicator-low-icon,
-      &[data-level="off"] .media-volume-indicator-off-icon {
-        display: block;
-      }
+    .media-volume-indicator[data-level="low"] .media-volume-indicator-low-icon,
+    .media-volume-indicator[data-level="off"] .media-volume-indicator-off-icon {
+      display: block;
     }
 
     .media-volume-indicator-value {
@@ -334,10 +326,8 @@
       height: calc(var(--media-spacing) * 4.5);
     }
 
-    @scope (.media-seek-indicator) {
-      &[data-direction="backward"] .media-seek-indicator-icon {
-        transform: scaleX(-1);
-      }
+    .media-seek-indicator[data-direction="backward"] .media-seek-indicator-icon {
+      transform: scaleX(-1);
     }
 
     .media-seek-indicator-value {
@@ -418,10 +408,8 @@
       z-index: 40;
     }
 
-    @scope (.media-buffering-indicator-controls) {
-      &:not([data-visible]) .media-buffering-indicator-backdrop {
-        background-color: #0006;
-      }
+    .media-buffering-indicator-controls:not([data-visible]) .media-buffering-indicator-backdrop {
+      background-color: #0006;
     }
 
     @media (forced-colors: active) {
@@ -608,10 +596,8 @@
       margin-inline-end: calc(var(--media-spacing) * -1);
     }
 
-    @scope (.media-menu-radio-item) {
-      &[aria-checked="true"] .media-menu-indicator {
-        opacity: 1;
-      }
+    .media-menu-radio-item[aria-checked="true"] .media-menu-indicator {
+      opacity: 1;
     }
 
     .media-menu-radio-icon {
@@ -1074,15 +1060,13 @@
       position: absolute;
     }
 
-    @scope (.media-time-slider) {
-      &[data-dragging] .media-time-slider-fill {
-        left: calc(var(--media-slider-chapter-start, 0%) + var(--media-spacing) * var(--media-chapter-inset-start, 0));
-        right: max(
-          calc(100% - var(--media-slider-pointer, 0%)),
-          calc(100% - var(--media-slider-chapter-end, 100%) + var(--media-spacing) * var(--media-chapter-inset-end, 0))
-        );
-        clip-path: inset(-1px 0);
-      }
+    .media-time-slider[data-dragging] .media-time-slider-fill {
+      left: calc(var(--media-slider-chapter-start, 0%) + var(--media-spacing) * var(--media-chapter-inset-start, 0));
+      right: max(
+        calc(100% - var(--media-slider-pointer, 0%)),
+        calc(100% - var(--media-slider-chapter-end, 100%) + var(--media-spacing) * var(--media-chapter-inset-end, 0))
+      );
+      clip-path: inset(-1px 0);
     }
 
     @media (forced-colors: active) {
@@ -1104,17 +1088,13 @@
       display: grid;
     }
 
-    @scope (.media-time-slider) {
-      &[data-disabled] .media-time-slider-preview {
-        display: none;
-      }
+    .media-time-slider[data-disabled] .media-time-slider-preview {
+      display: none;
     }
 
-    @scope (.media-time-slider) {
-      &[data-dragging] .media-time-slider-preview,
-      &[data-pointing] .media-time-slider-preview {
-        opacity: 1;
-      }
+    .media-time-slider[data-dragging] .media-time-slider-preview,
+    .media-time-slider[data-pointing] .media-time-slider-preview {
+      opacity: 1;
     }
 
     .media-time-slider-preview-label {
@@ -1148,10 +1128,8 @@
       transform: translateX(-50%);
     }
 
-    @scope (.media-time-slider) {
-      &[data-dragging] .media-time-slider-thumb {
-        left: var(--media-slider-pointer);
-      }
+    .media-time-slider[data-dragging] .media-time-slider-thumb {
+      left: var(--media-slider-pointer);
     }
 
     .media-time-slider-thumb:focus-visible {
@@ -1224,10 +1202,8 @@
       display: none;
     }
 
-    @scope (.media-captions-button) {
-      &[data-active] .media-captions-button-on-icon {
-        display: block;
-      }
+    .media-captions-button[data-active] .media-captions-button-on-icon {
+      display: block;
     }
   }
 
@@ -1251,11 +1227,9 @@
       display: inline-block;
     }
 
-    @scope (.media-live-button) {
-      &[data-live-edge] .media-live-button-dot {
-        opacity: 1;
-        background-color: #f43f5e;
-      }
+    .media-live-button[data-live-edge] .media-live-button-dot {
+      opacity: 1;
+      background-color: #f43f5e;
     }
   }
 
@@ -1278,13 +1252,11 @@
       background-color: var(--media-background);
     }
 
-    @scope (.media-play-button) {
-      &[data-started]:not([data-paused]):not([data-ended]) .media-play-button-pause-icon,
-      &:not([data-ended]):not([data-started]) .media-play-button-play-icon,
-      &:not([data-ended])[data-paused] .media-play-button-play-icon,
-      &[data-ended] .media-play-button-restart-icon {
-        display: block;
-      }
+    .media-play-button[data-started]:not([data-paused]):not([data-ended]) .media-play-button-pause-icon,
+    .media-play-button:not([data-ended]):not([data-started]) .media-play-button-play-icon,
+    .media-play-button:not([data-ended])[data-paused] .media-play-button-play-icon,
+    .media-play-button[data-ended] .media-play-button-restart-icon {
+      display: block;
     }
   }
 
@@ -1293,20 +1265,16 @@
       display: none;
     }
 
-    @scope (.media-mute-button) {
-      &:not([data-muted]) .media-mute-button-high-icon {
-        display: block;
-      }
+    .media-mute-button:not([data-muted]) .media-mute-button-high-icon {
+      display: block;
     }
 
     .media-mute-button-off-icon {
       display: none;
     }
 
-    @scope (.media-mute-button) {
-      &[data-muted] .media-mute-button-off-icon {
-        display: block;
-      }
+    .media-mute-button[data-muted] .media-mute-button-off-icon {
+      display: block;
     }
   }
 
@@ -1437,11 +1405,9 @@
       bottom: 0;
     }
 
-    @scope (.video-controls-content) {
-      &:not([data-visible]) .video-controls-bottom {
-        pointer-events: none;
-        opacity: 0;
-      }
+    .video-controls-content:not([data-visible]) .video-controls-bottom {
+      pointer-events: none;
+      opacity: 0;
     }
 
     @media (forced-colors: active) {
@@ -1473,17 +1439,13 @@
       transform: translate(-50%, -50%);
     }
 
-    @scope (.video-controls-content) {
-      &:not([data-visible]) .video-controls-center {
-        pointer-events: none;
-        opacity: 0;
-      }
+    .video-controls-content:not([data-visible]) .video-controls-center {
+      pointer-events: none;
+      opacity: 0;
     }
 
-    @scope (.video-controls-buffering) {
-      &[data-visible] .video-controls-center {
-        display: none !important;
-      }
+    .video-controls-buffering[data-visible] .video-controls-center {
+      display: none !important;
     }
 
     .video-controls-center:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
@@ -1614,11 +1576,9 @@
       top: 0;
     }
 
-    @scope (.video-controls-content) {
-      &:not([data-visible]) .video-controls-top {
-        pointer-events: none;
-        opacity: 0;
-      }
+    .video-controls-content:not([data-visible]) .video-controls-top {
+      pointer-events: none;
+      opacity: 0;
     }
 
     .video-controls-top:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
@@ -1762,10 +1722,8 @@
       display: none;
     }
 
-    @scope (.media-airplay-button) {
-      &[data-airplay-state="connected"] .media-airplay-button-exit-icon {
-        display: block;
-      }
+    .media-airplay-button[data-airplay-state="connected"] .media-airplay-button-exit-icon {
+      display: block;
     }
   }
 
@@ -1781,30 +1739,24 @@
       display: none;
     }
 
-    @scope (.media-cast-button) {
-      &[data-cast-state="connected"] .media-cast-button-exit-icon {
-        display: block;
-      }
+    .media-cast-button[data-cast-state="connected"] .media-cast-button-exit-icon {
+      display: block;
     }
 
     .media-fullscreen-button-enter-icon {
       display: none;
     }
 
-    @scope (.media-fullscreen-button) {
-      &:not([data-fullscreen]) .media-fullscreen-button-enter-icon {
-        display: block;
-      }
+    .media-fullscreen-button:not([data-fullscreen]) .media-fullscreen-button-enter-icon {
+      display: block;
     }
 
     .media-fullscreen-button-exit-icon {
       display: none;
     }
 
-    @scope (.media-fullscreen-button) {
-      &[data-fullscreen] .media-fullscreen-button-exit-icon {
-        display: block;
-      }
+    .media-fullscreen-button[data-fullscreen] .media-fullscreen-button-exit-icon {
+      display: block;
     }
 
     :where(.media-pip-button)[data-pip] .media-pip-button-enter-icon,
@@ -1812,10 +1764,8 @@
       display: none;
     }
 
-    @scope (.media-pip-button) {
-      &[data-pip] .media-pip-button-exit-icon {
-        display: block;
-      }
+    .media-pip-button[data-pip] .media-pip-button-exit-icon {
+      display: block;
     }
   }
 
