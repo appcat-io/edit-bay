@@ -22,7 +22,7 @@ export function App() {
   const [params, setParams] = useState(() => readParams(location.search));
   const [optionsOpen, setOptionsOpen] = useState(() => readStored('options-open', true));
   // The frame loads once with the first settings; later changes are posted to it, so playback is never interrupted.
-  const [frameUrl] = useState(() => `./preview.html#${writeParams(params)}`);
+  const [frameUrl] = useState(() => `../preview.html#${writeParams(params)}`);
   const preferences = usePreferences();
   const query = writeParams(params);
 
@@ -61,7 +61,7 @@ export function App() {
       className="bg-background text-foreground h-screen min-h-0 flex-col overflow-hidden"
       style={{ '--sidebar-width': '20rem' } as CSSProperties}
     >
-      <Navbar previewUrl={`./preview.html#${query}`} optionsId={optionsId} />
+      <Navbar previewUrl={`../preview.html#${query}`} optionsId={optionsId} />
       <div className="flex min-h-0 flex-1">
         <main className="flex min-h-0 min-w-0 flex-1 flex-col">
           <iframe

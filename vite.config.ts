@@ -25,8 +25,12 @@ export default defineConfig({
     outDir: path('./dist'),
     emptyOutDir: true,
     rolldownOptions: {
-      // The workbench shell, and the preview page it frames.
-      input: { workbench: path('./apps/preview/index.html'), preview: path('./apps/preview/preview.html') },
+      // The project page at the root, the workbench at /workbench/, and the preview page the workbench frames.
+      input: {
+        site: path('./apps/preview/index.html'),
+        workbench: path('./apps/preview/workbench/index.html'),
+        preview: path('./apps/preview/preview.html'),
+      },
     },
   },
 });

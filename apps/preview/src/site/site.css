@@ -1,0 +1,326 @@
+/* The Edit bay project page. Colors and type follow the skin's own tokens in src/styles/themes/edit-bay.css. */
+
+:root {
+  color-scheme: dark;
+  --site-bg: #0e0f10;
+  --site-surface: #161719;
+  --site-raised: #1c1d1f;
+  --site-line: #2e3033;
+  --site-ink: #e6e6e3;
+  --site-ink-strong: #ffffff;
+  --site-muted: #c9ccd0;
+  --site-quiet: #9ea2a8;
+  --site-signal: #ff4a3d;
+  --site-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --site-condensed: 'IBM Plex Sans Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --site-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --site-gutter: 16px;
+  --site-width: 70rem;
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --site-gutter: 32px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--site-bg);
+  color: var(--site-ink);
+  font: 400 16px/1.6 var(--site-sans);
+  -webkit-text-size-adjust: 100%;
+}
+
+a {
+  color: var(--site-ink-strong);
+  text-decoration-color: var(--site-quiet);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: var(--site-signal);
+}
+
+:focus-visible {
+  outline: 3px solid var(--site-signal);
+  outline-offset: 2px;
+}
+
+/* Player elements only provide state; the skin inside them is the box that gets sized. */
+media-i18n,
+video-player {
+  display: contents;
+}
+
+.site-skip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  padding: 8px 12px;
+  background: var(--site-ink-strong);
+  color: var(--site-bg);
+  font-weight: 500;
+  transform: translateY(-200%);
+}
+
+.site-skip:focus-visible {
+  transform: none;
+}
+
+/* ---------- Header ---------- */
+
+.site-header,
+main,
+.site-footer {
+  width: 100%;
+  max-width: calc(var(--site-width) + var(--site-gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--site-line);
+}
+
+.site-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 600 18px/1 var(--site-condensed);
+  text-decoration: none;
+  color: var(--site-ink-strong);
+}
+
+.site-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--site-signal);
+}
+
+.site-nav {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 12px;
+  font: 500 15px/1 var(--site-condensed);
+  text-decoration: none;
+  color: var(--site-muted);
+}
+
+.site-nav a:hover {
+  color: var(--site-ink-strong);
+}
+
+/* ---------- Hero and player ---------- */
+
+.site-hero {
+  padding-block: 48px 24px;
+  max-width: 44rem;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--site-condensed);
+  font-weight: 600;
+  color: var(--site-ink-strong);
+  text-wrap: balance;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.1;
+}
+
+.site-lead {
+  margin: 0;
+  font-size: 18px;
+  color: var(--site-muted);
+}
+
+.site-player {
+  margin-bottom: 16px;
+}
+
+.site-credit {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--site-quiet);
+}
+
+.site-credit a {
+  color: inherit;
+}
+
+/* ---------- Sections ---------- */
+
+.site-section {
+  padding-block: 40px;
+  border-top: 1px solid var(--site-line);
+}
+
+.site-section + .site-section {
+  margin-top: 0;
+}
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.site-section-lead {
+  margin: 0 0 16px;
+  max-width: 44rem;
+  color: var(--site-muted);
+}
+
+.site-notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 16px;
+}
+
+.site-note {
+  padding: 20px;
+  background: var(--site-surface);
+  border: 1px solid var(--site-line);
+  border-radius: 4px;
+}
+
+.site-note p {
+  margin: 0;
+  color: var(--site-muted);
+}
+
+.site-note p + p {
+  margin-top: 10px;
+}
+
+/* ---------- Keyboard ---------- */
+
+.site-keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 16px;
+}
+
+.site-key-group {
+  padding: 20px;
+  background: var(--site-surface);
+  border: 1px solid var(--site-line);
+  border-radius: 4px;
+}
+
+.site-key-group dl {
+  margin: 8px 0 0;
+}
+
+.site-key-row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, auto) 1fr;
+  gap: 12px;
+  align-items: baseline;
+  padding-block: 7px;
+  border-top: 1px solid var(--site-line);
+}
+
+.site-key-row dt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: baseline;
+}
+
+.site-key-row dd {
+  margin: 0;
+  color: var(--site-muted);
+}
+
+kbd {
+  display: inline-block;
+  min-width: 26px;
+  padding: 2px 6px;
+  background: var(--site-raised);
+  border: 1px solid var(--site-line);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  font: 500 13px/1.4 var(--site-mono);
+  color: var(--site-ink-strong);
+  text-align: center;
+}
+
+.site-key-word {
+  font-size: 13px;
+  color: var(--site-quiet);
+}
+
+/* ---------- Code ---------- */
+
+.site-code {
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  background: var(--site-surface);
+  border: 1px solid var(--site-line);
+  border-radius: 4px;
+  font: 400 14px/1.6 var(--site-mono);
+  color: var(--site-ink);
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-block: 24px 40px;
+  border-top: 1px solid var(--site-line);
+  font-size: 14px;
+  color: var(--site-quiet);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer a {
+  color: var(--site-muted);
+}
+
+@media (forced-colors: active) {
+  .site-dot {
+    background: CanvasText;
+  }
+}

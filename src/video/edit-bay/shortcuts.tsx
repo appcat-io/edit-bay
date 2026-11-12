@@ -7,7 +7,7 @@ import { Button } from '../shared/button';
 import { CloseIcon, KeyboardIcon } from './icons';
 import { KeyTooltip, SEEK_STEP } from './transport';
 
-const GROUPS: { title: string; keys: { keys: string[]; label: string }[] }[] = [
+export const SHORTCUT_GROUPS: { title: string; keys: { keys: string[]; label: string }[] }[] = [
   {
     title: 'Transport',
     keys: [
@@ -81,7 +81,7 @@ export function ShortcutsSheet() {
           </Dialog.Close>
         </div>
         <div className={'eb-shortcuts-groups'}>
-          {GROUPS.map((group) => (
+          {SHORTCUT_GROUPS.map((group) => (
             <section key={group.title} className={'eb-shortcuts-group'} aria-label={group.title}>
               <h3 className={'eb-shortcuts-group-title'}>{group.title}</h3>
               <dl className={'eb-shortcuts-list'}>
@@ -97,7 +97,7 @@ export function ShortcutsSheet() {
                           <kbd key={key} className={'eb-key'}>
                             {key}
                           </kbd>
-                        )
+                        ),
                       )}
                     </dt>
                     <dd className={'eb-shortcuts-label'}>{item.label}</dd>

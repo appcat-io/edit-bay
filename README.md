@@ -8,7 +8,7 @@ A Video.js video skin for React, styled with CSS. It started from the Scaffold s
 bun dev
 ```
 
-The workbench opens your skin in a slimmed-down version of the Video.js sandbox. It plays Tears of Steel from Mux at 24 fps, with chapters and subtitles in six languages; change the media in `apps/preview/src/frame/player`. The options panel sets the player's width and aspect ratio, the color scheme, text direction, and language, and playback options such as autoplay, muted, loop, and preload. The arrow button opens the preview on its own. The settings live in the URL, so a link such as `/?width=384&ratio=9:16&dir=rtl&locale=ar` opens the workbench in that state, and `/preview.html#width=384&ratio=9:16` opens the preview alone.
+This serves the project page at `/` and the workbench at `/workbench/`. The workbench opens your skin in a slimmed-down version of the Video.js sandbox. It plays Tears of Steel from Mux at 24 fps, with chapters and subtitles in six languages; change the media in `apps/preview/src/frame/player`. The options panel sets the player's width and aspect ratio, the color scheme, text direction, and language, and playback options such as autoplay, muted, loop, and preload. The arrow button opens the preview on its own. The settings live in the URL, so a link such as `/workbench/?width=384&ratio=9:16&dir=rtl&locale=ar` opens the workbench in that state, and `/preview.html#width=384&ratio=9:16` opens the preview alone.
 
 ## Deploy
 
@@ -26,7 +26,7 @@ To deploy on every push instead, put the project on GitHub and import it on Verc
   - `src/video/`: the skin component and its parts.
   - `src/styles/`: theme tokens and shared styles the skin imports, when it started from a packaged skin.
   - `src/skin.css`: global styles for the skin.
-- `apps/preview/`: the workbench that previews the skin. You don't need to change it.
+- `apps/preview/`: the site. `index.html` and `src/site/` are the Edit bay project page at the root; `workbench/` and `src/shell/` are the workbench at `/workbench/`; `preview.html` and `src/frame/` are the preview the workbench frames.
   - `src/shell/`: the Shadcn shell.
   - `src/frame/`: the page the shell frames. `player` mounts your skin in a player and sets the media it plays.
   - `public/`: files the preview serves, such as the chapters track.
