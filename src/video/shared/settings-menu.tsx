@@ -1,9 +1,17 @@
 /** @jsxImportSource react */
+import { AirPlayButtonCore, CastButtonCore } from '@videojs/core';
+import { selectRemotePlayback } from '@videojs/core/dom';
+import * as airplayText from '@videojs/core/i18n/text/airplay';
+import * as castText from '@videojs/core/i18n/text/cast';
 import { audioText, captionsText, qualityText, settingsText, speedText } from '@videojs/core/i18n/text/menu';
 import { Text as TextPrimitive } from '@videojs/react';
-import { Menu } from '@videojs/react';
-import { useEffect, useRef, useState } from 'react';
+import { Menu, usePlayer } from '@videojs/react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AirPlayEnterIcon as AirPlayEnterIconPrimitive,
+  AirPlayExitIcon as AirPlayExitIconPrimitive,
+  CastEnterIcon as CastEnterIconPrimitive,
+  CastExitIcon as CastExitIconPrimitive,
   ChevronIcon as ChevronIconPrimitive,
   SwitchesIcon as SwitchesIconPrimitive,
   SpeechIcon as SpeechIconPrimitive,
@@ -175,12 +183,71 @@ function CleanFeedItem() {
   );
 }
 
+/**
+ * AirPlay and Cast as menu rows, for players under 62rem, where the panel has no room for their buttons. Each row uses
+ * the same Video.js logic as its button and shows only while a device is available. Labels are Video.js's own, so they
+ * follow the player's language.
+ */
+function RemotePlaybackItems() {
+  const remote = usePlayer(selectRemotePlayback);
+  const cores = useMemo(() => ({ airplay: new AirPlayButtonCore(), cast: new CastButtonCore() }), []);
+  if (!remote) return null;
+
+  cores.airplay.setMedia(remote);
+  cores.cast.setMedia(remote);
+  const airplay = cores.airplay.getState();
+  const cast = cores.cast.getState();
+  if (airplay.disabled && cast.disabled) return null;
+
+  return (
+    <>
+      <Menu.Separator className={'media-menu-separator'} />
+      {!airplay.disabled && (
+        <Menu.Item className={'media-menu-item eb-menu-remote-item'} onSelect={() => cores.airplay.toggle(remote)}>
+          {airplay.state === 'connected' ? (
+            <AirPlayExitIconPrimitive className={'media-menu-trigger-icon'} />
+          ) : (
+            <AirPlayEnterIconPrimitive className={'media-menu-trigger-icon'} />
+          )}
+          {airplay.state === 'connected' ? (
+            <TextPrimitive token={airplayText.stopText.key}>{airplayText.stopText.text}</TextPrimitive>
+          ) : airplay.state === 'connecting' ? (
+            <TextPrimitive token={castText.connectingText.key}>{castText.connectingText.text}</TextPrimitive>
+          ) : (
+            <TextPrimitive token={airplayText.startText.key}>{airplayText.startText.text}</TextPrimitive>
+          )}
+        </Menu.Item>
+      )}
+      {!cast.disabled && (
+        <Menu.Item className={'media-menu-item eb-menu-remote-item'} onSelect={() => cores.cast.toggle(remote)}>
+          {cast.connection === 'connected' ? (
+            <CastExitIconPrimitive className={'media-menu-trigger-icon'} />
+          ) : (
+            <CastEnterIconPrimitive className={'media-menu-trigger-icon'} />
+          )}
+          {cast.connection === 'connected' ? (
+            <TextPrimitive token={castText.stopText.key}>{castText.stopText.text}</TextPrimitive>
+          ) : cast.connection === 'connecting' ? (
+            <TextPrimitive token={castText.connectingText.key}>{castText.connectingText.text}</TextPrimitive>
+          ) : (
+            <TextPrimitive token={castText.startText.key}>{castText.startText.text}</TextPrimitive>
+          )}
+        </Menu.Item>
+      )}
+    </>
+  );
+}
+
 /** Player width, in rem, under which the menu opens as a sheet over the whole picture. */
 const SHEET_BELOW_REM = 30;
 
+/** Player width, in rem, under which the AirPlay and Cast buttons give way to menu rows. Matches the 62rem step in CSS. */
+const REMOTE_IN_MENU_BELOW_REM = 62;
+
 /**
- * True while the player is too small for a corner menu. Measured from the skin's own width, so it follows the player
- * and not the window. The Close row only renders in sheet mode, so it never takes keyboard focus on larger players.
+ * Tracks the player's width: `sheet` while it is too small for a corner menu, and `remoteInMenu` while it is too small
+ * for the AirPlay and Cast buttons. Measured from the skin's own width, so it follows the player and not the window.
+ * The Close row only renders in sheet mode, so it never takes keyboard focus on larger players.
  *
  * In sheet mode the player's box on screen is written to `--eb-sheet-*` properties on the skin. The popup inherits
  * them and covers the player with fixed positioning, which works in every browser, unlike CSS anchor scoping.
@@ -188,13 +255,16 @@ const SHEET_BELOW_REM = 30;
 function useSheetMode() {
   const probe = useRef<HTMLSpanElement>(null);
   const [sheet, setSheet] = useState(false);
+  const [remoteInMenu, setRemoteInMenu] = useState(false);
 
   useEffect(() => {
     const skin = probe.current?.closest<HTMLElement>('.media-skin');
     if (!skin || typeof ResizeObserver === 'undefined') return;
     const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const observer = new ResizeObserver(([entry]) => {
-      if (entry) setSheet(entry.contentRect.width < SHEET_BELOW_REM * rem);
+      if (!entry) return;
+      setSheet(entry.contentRect.width < SHEET_BELOW_REM * rem);
+      setRemoteInMenu(entry.contentRect.width < REMOTE_IN_MENU_BELOW_REM * rem);
     });
     observer.observe(skin);
     return () => observer.disconnect();
@@ -222,11 +292,11 @@ function useSheetMode() {
     };
   }, [sheet]);
 
-  return { probe, sheet };
+  return { probe, sheet, remoteInMenu };
 }
 
 export function SettingsMenu() {
-  const { probe, sheet } = useSheetMode();
+  const { probe, sheet, remoteInMenu } = useSheetMode();
 
   return (
     <>
@@ -261,6 +331,7 @@ export function SettingsMenu() {
             <AudioTrackMenu />
             <PlaybackRateMenu />
             <CaptionsMenu />
+            {remoteInMenu && <RemotePlaybackItems />}
             <Menu.Separator className={'media-menu-separator'} />
             <CleanFeedItem />
           </Menu.Content>
