@@ -22,10 +22,11 @@ type TopBarProps = {
  * the page adds. One component, so every page shows the same bar.
  */
 export function TopBar({ current, root, children }: TopBarProps) {
-  const links: { page: Page | 'github'; label: string; href: string }[] = [
+  const links: { page: Page | 'github'; label: string; href: string; newTab?: boolean }[] = [
     { page: 'overview', label: 'Overview', href: root },
     { page: 'workbench', label: 'Workbench', href: `${root}workbench/` },
-    { page: 'github', label: 'GitHub', href: REPO_URL },
+    // The repo opens in a new tab, so the player stays where the viewer left it.
+    { page: 'github', label: 'GitHub', href: REPO_URL, newTab: true },
   ];
 
   return (
@@ -53,8 +54,13 @@ export function TopBar({ current, root, children }: TopBarProps) {
         <ul>
           {links.map((link) => (
             <li key={link.page}>
-              <a href={link.href} aria-current={link.page === current ? 'page' : undefined}>
+              <a
+                href={link.href}
+                aria-current={link.page === current ? 'page' : undefined}
+                {...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
                 {link.label}
+                {link.newTab ? <span className="eb-bar-hidden"> (opens in a new tab)</span> : null}
               </a>
             </li>
           ))}
