@@ -233,12 +233,16 @@
 
     /* ---------- Settings sheet (small players) ---------- */
 
+    /* The header covers the list's 8px padding on the top and sides, so rows scrolling up pass under it and never
+       show above it. Its own padding keeps the text in line with the row labels. */
     .eb-menu-close {
       position: sticky;
-      top: 0;
+      top: -8px;
       z-index: 1;
       display: flex;
       justify-content: space-between;
+      margin: -8px -8px 0;
+      padding-inline: 16px;
       background-color: #141516;
       border-bottom: 1px solid var(--eb-line);
     }
@@ -246,6 +250,8 @@
     /* The header stays solid in every state. A see-through highlight would show the rows scrolling under it. */
     .media-menu-back-item.eb-menu-close,
     .media-menu-back-item.eb-menu-close[data-highlighted] {
+      /* Back rows are 100% wide; auto lets the negative margins reach both edges of the sheet. */
+      width: auto;
       min-height: 40px;
       background-color: #141516;
       z-index: 2;
@@ -1225,10 +1231,11 @@
         padding-block: 0;
       }
 
+      /* At least 24px of press area at every point along the bar, including where the controls row starts under it. */
       .media-time-slider.eb-timeline-slider::after {
         content: "";
         position: absolute;
-        inset: -14px 0 -4px;
+        inset: -18px 0 -4px;
       }
 
       .eb-clip {
