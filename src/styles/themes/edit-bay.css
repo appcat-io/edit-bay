@@ -28,7 +28,7 @@
     --eb-font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     --eb-radius: 3px;
     --eb-target: 40px;
-    --eb-panel-height: 76px;
+    --eb-panel-height: 94px;
 
     --media-font-family: var(--eb-font-sans);
     --media-accent: var(--eb-signal);

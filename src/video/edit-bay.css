@@ -1410,6 +1410,52 @@
         display: grid;
       }
     }
+
+    /* ---------- Slate on short players ---------- */
+
+    /* Wide films and small players leave less height between the readouts and the panel than the full card needs
+       (215px). The slate measures that space: below it, the card becomes one row with the title, duration, and play
+       button; below the one row's height, the card hides and the panel's play button starts the film. */
+    .eb-slate {
+      container: eb-slate / size;
+    }
+
+    @container eb-slate (height < 216px) {
+      .eb-slate-card {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px 16px;
+        padding-bottom: 12px;
+      }
+
+      .eb-slate-sticks {
+        grid-column: 1 / -1;
+        height: 10px;
+      }
+
+      .eb-slate-fields {
+        grid-template-columns: minmax(0, 1fr) auto;
+        padding-inline-end: 0;
+      }
+
+      .eb-slate-fields .eb-slate-field-title {
+        grid-column: auto;
+      }
+
+      .eb-slate-fields .eb-slate-field:not(.eb-slate-field-title, .eb-slate-field-duration) {
+        display: none;
+      }
+
+      .eb-slate-play.media-button {
+        margin-inline: 0 16px;
+      }
+    }
+
+    @container eb-slate (height < 72px) {
+      .eb-slate-card {
+        display: none;
+      }
+    }
   }
 }
 
@@ -1421,7 +1467,7 @@
   @container media-root (width < 22rem) {
     .media-skin.eb-skin video,
     .media-skin.eb-skin .eb-end {
-      --eb-panel-height: 50px;
+      --eb-panel-height: 52px;
     }
   }
 
@@ -1429,7 +1475,7 @@
     .media-skin.eb-skin video,
     .media-skin.eb-skin .eb-slate,
     .media-skin.eb-skin .eb-end {
-      --eb-panel-height: 112px;
+      --eb-panel-height: 124px;
     }
   }
 

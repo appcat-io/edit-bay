@@ -1,6 +1,7 @@
 /** @jsxImportSource react */
 
 import { selectMetadata, selectPlayback, selectTextTrack, selectTime, usePlayer } from '@videojs/react';
+import { type FocusEvent, useEffect, useRef } from 'react';
 
 import { PlayButton } from '../shared/play-button';
 import { formatFrameRate, useFrameRate } from './frame-rate';
@@ -16,8 +17,22 @@ export function Slate() {
   const tracks = usePlayer(selectTextTrack);
   const time = usePlayer(selectTime);
   const frameRate = useFrameRate();
+  const started = Boolean(playback?.started);
 
-  if (!playback || playback.started) return null;
+  // When the slate goes away with focus on it, focus would drop to the page. Move it to the panel's play button, so
+  // keyboard users keep their place and the shortcuts keep working. A mouse click shows no focus ring.
+  const focusedIn = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    const skin = focusedIn.current;
+    if (!started || !skin) return;
+    focusedIn.current = null;
+    const active = document.activeElement;
+    if (!active || active === document.body || !active.isConnected) {
+      skin.querySelector<HTMLElement>('.eb-play-button')?.focus();
+    }
+  }, [started]);
+
+  if (!playback || started) return null;
 
   // With preload off, the browser doesn't know the length until playback starts.
   const hasDuration = (time?.duration ?? 0) > 0;
@@ -26,7 +41,17 @@ export function Slate() {
 
   return (
     <div className={'eb-slate'}>
-      <div className={'eb-slate-card'}>
+      <div
+        className={'eb-slate-card'}
+        onFocus={(event: FocusEvent<HTMLDivElement>) => {
+          focusedIn.current = event.currentTarget.closest<HTMLElement>('.media-skin');
+        }}
+        onBlur={(event: FocusEvent<HTMLDivElement>) => {
+          // Focus that moves on to another element was the viewer's choice. Removal has no next element.
+          if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node))
+            focusedIn.current = null;
+        }}
+      >
         <div className={'eb-slate-sticks'} aria-hidden="true" />
         <dl className={'eb-slate-fields'}>
           <div className={'eb-slate-field eb-slate-field-title'}>
