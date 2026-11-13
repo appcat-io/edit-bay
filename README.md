@@ -26,7 +26,7 @@ To deploy on every push instead, put the project on GitHub and import it on Verc
   - `src/video/`: the skin component and its parts.
   - `src/styles/`: theme tokens and shared styles the skin imports, when it started from a packaged skin.
   - `src/skin.css`: global styles for the skin.
-- `apps/preview/`: the site. `index.html` and `src/site/` are the Edit bay project page at the root; `workbench/` and `src/shell/` are the workbench at `/workbench/`; `preview.html` and `src/frame/` are the preview the workbench frames.
+- `apps/preview/`: the site. `index.html` and `src/site/` are the Edit bay project page at the root; `workbench/` and `src/shell/` are the workbench at `/workbench/`; `preview.html` and `src/frame/` are the preview the workbench frames. `src/site/top-bar.tsx` is the top bar all three pages share.
   - `src/shell/`: the Shadcn shell.
   - `src/frame/`: the page the shell frames. `player` mounts your skin in a player and sets the media it plays.
   - `public/`: files the preview serves, such as the chapters track.

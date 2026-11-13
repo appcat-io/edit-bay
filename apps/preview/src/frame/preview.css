@@ -8,11 +8,18 @@ body {
   background: light-dark(#ffffff, #0a0a0a);
 }
 
+/* The page fills the window. Opened on its own, Edit bay's top bar sits above the player. */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .preview-page {
   display: grid;
+  flex: 1;
   place-items: center;
   box-sizing: border-box;
-  min-height: 100vh;
   padding: 24px;
 }
 
@@ -38,7 +45,9 @@ live-audio-player {
 /* Credit for the film the preview plays. Part of the page, not the skin. */
 .preview-credit {
   margin: 10px 0 0;
-  font: 13px/1.4 system-ui, sans-serif;
+  font:
+    13px/1.4 system-ui,
+    sans-serif;
   color: light-dark(#52525b, #a1a1aa);
 }
 

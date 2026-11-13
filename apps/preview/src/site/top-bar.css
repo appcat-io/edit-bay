@@ -1,0 +1,209 @@
+/* The bar at the top of every Edit bay page. Colors and type follow the skin's tokens in src/styles/themes/edit-bay.css.
+   Plain CSS with its own class names, so it looks the same under the project page, the workbench's Tailwind reset,
+   and the player page. Each page loads IBM Plex Sans Condensed. */
+
+.eb-bar {
+  --eb-bar-bg: #0e0f10;
+  --eb-bar-line: #2e3033;
+  --eb-bar-ink: #ffffff;
+  --eb-bar-muted: #c9ccd0;
+  --eb-bar-quiet: #9ea2a8;
+  --eb-bar-signal: #ff4a3d;
+  --eb-bar-hover: #1c1d1f;
+  --eb-bar-target: 40px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: "trail links tools";
+  align-items: center;
+  gap: 0 16px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+  background: var(--eb-bar-bg);
+  border-bottom: 1px solid var(--eb-bar-line);
+  color: var(--eb-bar-muted);
+  font:
+    500 15px/1.2 "IBM Plex Sans Condensed",
+    "Arial Narrow",
+    system-ui,
+    sans-serif;
+  color-scheme: dark;
+}
+
+@media (pointer: coarse) {
+  .eb-bar {
+    --eb-bar-target: 44px;
+  }
+}
+
+@media (min-width: 48rem) {
+  .eb-bar {
+    padding: 0 24px;
+  }
+}
+
+.eb-bar ol,
+.eb-bar ul {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.eb-bar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--eb-bar-target);
+  color: inherit;
+  text-decoration: none;
+}
+
+.eb-bar a:focus-visible,
+.eb-bar button:focus-visible {
+  outline: 3px solid var(--eb-bar-signal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------- Breadcrumb ---------- */
+
+.eb-bar-trail {
+  grid-area: trail;
+  min-width: 0;
+}
+
+.eb-bar-trail li {
+  display: flex;
+  align-items: center;
+}
+
+.eb-bar-parent {
+  color: var(--eb-bar-quiet);
+}
+
+.eb-bar-parent:hover {
+  color: var(--eb-bar-ink);
+}
+
+.eb-bar-slash {
+  padding-inline: 10px;
+  color: var(--eb-bar-quiet);
+}
+
+.eb-bar-name {
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--eb-bar-ink);
+  white-space: nowrap;
+}
+
+.eb-bar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--eb-bar-signal);
+}
+
+/* ---------- Page links ---------- */
+
+.eb-bar-links {
+  grid-area: links;
+  justify-self: end;
+  min-width: 0;
+}
+
+.eb-bar-links ul {
+  gap: 4px;
+}
+
+.eb-bar-links a {
+  position: relative;
+  padding-inline: 12px;
+  border-radius: 4px;
+}
+
+.eb-bar-links a:hover {
+  color: var(--eb-bar-ink);
+  background: var(--eb-bar-hover);
+}
+
+/* The current page: bright text and a red bar on the bar's bottom edge, like a selected clip. */
+.eb-bar-links a[aria-current="page"] {
+  color: var(--eb-bar-ink);
+}
+
+.eb-bar-links a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  inset: auto 12px -8px;
+  height: 2px;
+  background: var(--eb-bar-signal);
+}
+
+/* ---------- Page tools ---------- */
+
+.eb-bar-tools {
+  grid-area: tools;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding-inline-start: 12px;
+  border-inline-start: 1px solid var(--eb-bar-line);
+}
+
+.eb-bar-tools :is(a, button) {
+  display: inline-grid;
+  place-items: center;
+  width: var(--eb-bar-target);
+  height: var(--eb-bar-target);
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--eb-bar-muted);
+  cursor: pointer;
+}
+
+.eb-bar-tools :is(a, button):hover,
+.eb-bar-tools button[aria-expanded="true"] {
+  color: var(--eb-bar-ink);
+  background: var(--eb-bar-hover);
+}
+
+.eb-bar-tools svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Phones ---------- */
+
+/* The breadcrumb and tools share the first row, and the page links move to a second row. */
+@media (max-width: 39.99rem) {
+  .eb-bar {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "trail tools"
+      "links links";
+    padding-block: 4px;
+  }
+
+  .eb-bar-links {
+    justify-self: start;
+    margin-inline-start: -12px;
+  }
+
+  .eb-bar-links a[aria-current="page"]::after {
+    bottom: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .eb-bar-dot,
+  .eb-bar-links a[aria-current="page"]::after {
+    background: CanvasText;
+  }
+}

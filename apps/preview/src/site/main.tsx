@@ -6,6 +6,7 @@ import '@/skin.css';
 import { SHORTCUT_GROUPS } from '@/video/edit-bay/shortcuts';
 
 import { Player } from '../frame/player';
+import { TopBar } from './top-bar';
 import './site.css';
 
 const REPO = 'https://github.com/appcat-io/edit-bay';
@@ -51,22 +52,7 @@ function Site() {
       <a className="site-skip" href="#main">
         Skip to content
       </a>
-      <header className="site-header">
-        <a className="site-mark" href="./" aria-label="Edit bay home">
-          <span className="site-dot" aria-hidden="true" />
-          Edit bay
-        </a>
-        <nav aria-label="Site">
-          <ul className="site-nav">
-            <li>
-              <a href="./workbench/">Workbench</a>
-            </li>
-            <li>
-              <a href={REPO}>GitHub</a>
-            </li>
-          </ul>
-        </nav>
-      </header>
+      <TopBar current="overview" root="./" />
 
       <main id="main">
         <section className="site-hero" aria-labelledby="site-title">
