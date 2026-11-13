@@ -38,7 +38,7 @@ export const SHORTCUT_GROUPS: { title: string; keys: { keys: string[]; label: st
       { keys: ['C'], label: 'Subtitles' },
       { keys: ['F'], label: 'Full screen' },
       { keys: ['I'], label: 'Pop-out viewer' },
-      { keys: ['?'], label: 'This list' },
+      { keys: ['?'], label: 'Show keyboard shortcuts' },
     ],
   },
 ];

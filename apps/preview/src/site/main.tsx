@@ -78,7 +78,7 @@ const SCREENS = [
   {
     file: 'shortcuts',
     title: 'Keyboard shortcuts',
-    caption: 'Press ? for every key the player answers to.',
+    caption: 'Press the question mark key (?) to see every keyboard shortcut.',
     alt: 'The keyboard shortcuts sheet over the player, grouped into Transport, Timeline, and Monitor.',
   },
   {
@@ -185,7 +185,7 @@ function Site() {
         <section className="site-section" aria-labelledby="keys-title">
           <h2 id="keys-title">Keyboard</h2>
           <p className="site-section-lead">
-            Click the player, then use these keys. Press ? in the player for the same list.
+            Click the player, then use these keys. Press the question mark key (?) in the player to see this list there.
           </p>
           <div className="site-keys">
             {SHORTCUT_GROUPS.map((group) => (
