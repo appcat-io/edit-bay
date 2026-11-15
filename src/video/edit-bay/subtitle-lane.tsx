@@ -6,11 +6,17 @@ import { useEffect, useState } from 'react';
 interface CueSpan {
   start: number;
   end: number;
+  /** 0 for S1, 1 for S2. */
+  row: number;
 }
 
-/** Cues closer together than this read as one block at timeline scale. */
-const MERGE_GAP = 0.25;
+/** Subtitle lanes the timeline can show: S1, and S2 for cues that overlap one on S1. */
+const MAX_ROWS = 2;
 
+/**
+ * Each cue as its own block. A cue that starts before the cue on S1 ends goes to S2, the way an editor stacks
+ * overlapping clips on the next track. When both lanes are taken, it shares S2.
+ */
 function readCues(media: unknown): CueSpan[] {
   const tracks = (media as { textTracks?: TextTrackList } | null)?.textTracks;
   if (!tracks) return [];
@@ -18,23 +24,25 @@ function readCues(media: unknown): CueSpan[] {
   for (const track of Array.from(tracks)) {
     if (track.mode !== 'showing' || (track.kind !== 'subtitles' && track.kind !== 'captions')) continue;
 
-    const spans: CueSpan[] = [];
-    for (const cue of Array.from(track.cues ?? [])) {
-      const last = spans[spans.length - 1];
-      if (last && cue.startTime - last.end <= MERGE_GAP) last.end = Math.max(last.end, cue.endTime);
-      else spans.push({ start: cue.startTime, end: cue.endTime });
-    }
-    return spans;
+    const cues = Array.from(track.cues ?? []).sort((a, b) => a.startTime - b.startTime);
+    const rowEnds: number[] = [];
+    return cues.map((cue) => {
+      let row = rowEnds.findIndex((end) => cue.startTime >= end);
+      if (row === -1) row = Math.min(rowEnds.length, MAX_ROWS - 1);
+      rowEnds[row] = Math.max(rowEnds[row] ?? 0, cue.endTime);
+      return { start: cue.startTime, end: cue.endTime, row };
+    });
   }
 
   return [];
 }
 
 /**
- * The cues of the subtitle track that is showing. Streamed subtitles arrive in segments as the video loads, and the
- * browser adds them without an event, so the lane re-reads them once a second while subtitles are on.
+ * The cues of the subtitle track that is showing, and how many lanes they need. Streamed subtitles arrive in segments
+ * as the video loads, and the browser adds them without an event, so the lanes re-read them once a second while
+ * subtitles are on.
  */
-function useSubtitleCues(showing: boolean) {
+export function useSubtitleCues(showing: boolean) {
   const media = useMedia();
   const [cues, setCues] = useState<CueSpan[]>([]);
 
@@ -49,7 +57,9 @@ function useSubtitleCues(showing: boolean) {
         const next = readCues(media);
         const same =
           next.length === current.length &&
-          next.every((cue, i) => cue.start === current[i]!.start && cue.end === current[i]!.end);
+          next.every(
+            (cue, i) => cue.start === current[i]!.start && cue.end === current[i]!.end && cue.row === current[i]!.row,
+          );
         return same ? current : next;
       });
 
@@ -58,33 +68,44 @@ function useSubtitleCues(showing: boolean) {
     return () => window.clearInterval(timer);
   }, [media, showing]);
 
-  return cues;
+  const rows = cues.reduce((most, cue) => Math.max(most, cue.row + 1), 1);
+  return { cues, rows };
+}
+
+interface SubtitleLaneProps {
+  /** 0 for S1, 1 for S2. */
+  row: number;
+  cues: CueSpan[];
+  showing: boolean;
 }
 
 /**
- * S1, the subtitle lane: each run of subtitles is a block on the timeline, as in an editor. It is empty and its header
- * is struck through while subtitles are off. Decorative; the subtitles button and menu are the controls.
+ * A subtitle lane: each cue is a block on the timeline, as in an editor. S1 is empty and its header struck through
+ * while subtitles are off. Decorative; the subtitles button and menu are the controls.
  */
-export function SubtitleLane() {
-  const tracks = usePlayer(selectTextTrack);
+export function SubtitleLane({ row, cues, showing }: SubtitleLaneProps) {
   const time = usePlayer(selectTime);
-  const showing = Boolean(tracks?.subtitlesShowing);
-  const cues = useSubtitleCues(showing);
   const duration = time?.duration ?? 0;
 
   return (
-    <div className={'eb-lane eb-lane-s1'} data-off={showing ? undefined : ''} aria-hidden="true">
+    <div
+      className={`eb-lane eb-lane-subtitles ${row === 0 ? 'eb-lane-s1' : 'eb-lane-s2'}`}
+      data-off={showing ? undefined : ''}
+      aria-hidden="true"
+    >
       {duration > 0 &&
-        cues.map((cue) => (
-          <span
-            key={cue.start}
-            className={'eb-subtitle-clip'}
-            style={{
-              left: `${(cue.start / duration) * 100}%`,
-              width: `${(Math.max(0, Math.min(cue.end, duration) - cue.start) / duration) * 100}%`,
-            }}
-          />
-        ))}
+        cues
+          .filter((cue) => cue.row === row)
+          .map((cue) => (
+            <span
+              key={`${cue.start}-${cue.end}`}
+              className={'eb-subtitle-clip'}
+              style={{
+                left: `${(cue.start / duration) * 100}%`,
+                width: `${(Math.max(0, Math.min(cue.end, duration) - cue.start) / duration) * 100}%`,
+              }}
+            />
+          ))}
     </div>
   );
 }

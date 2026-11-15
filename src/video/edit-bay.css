@@ -554,11 +554,12 @@
     }
 
     .eb-lane-a1,
-    .eb-lane-s1 {
+    .eb-lane-s1,
+    .eb-lane-s2 {
       display: none;
     }
 
-    /* Subtitle blocks: one per run of subtitles, filling in as the stream loads them. */
+    /* Subtitle blocks: one per cue, filling in as the stream loads them. */
     .eb-subtitle-clip {
       position: absolute;
       inset-block: 2px;
@@ -1362,8 +1363,34 @@
       }
 
       .eb-lane-a1,
-      .eb-lane-s1 {
+      .eb-lane-s1,
+      .eb-lane-s2 {
         display: block;
+      }
+
+      /* S2 appears only when the showing track has overlapping cues. It takes a row between S1 and A1. */
+      .eb-timeline[data-subtitle-rows] {
+        --eb-row-s2: var(--eb-row-s1);
+      }
+
+      .eb-timeline[data-subtitle-rows] .eb-track-headers {
+        grid-template-rows:
+          calc(var(--eb-row-render) + var(--eb-row-gap) + var(--eb-row-ruler)) var(--eb-row-v1)
+          var(--eb-row-s1) var(--eb-row-s2) var(--eb-row-a1);
+      }
+
+      .eb-timeline[data-subtitle-rows] .media-time-slider.eb-timeline-slider {
+        grid-template-rows:
+          var(--eb-row-render) var(--eb-row-ruler) var(--eb-row-v1) var(--eb-row-s1) var(--eb-row-s2)
+          var(--eb-row-a1);
+      }
+
+      .eb-timeline[data-subtitle-rows] .eb-lane-s2 {
+        grid-row: 5;
+      }
+
+      .eb-timeline[data-subtitle-rows] .eb-lane-a1 {
+        grid-row: 6;
       }
 
       .eb-panel {
@@ -1484,6 +1511,11 @@
     .media-skin.eb-skin .eb-slate,
     .media-skin.eb-skin .eb-end {
       --eb-panel-height: 166px;
+    }
+
+    /* The S2 lane adds a 12px row and a 3px gap. */
+    .media-skin.eb-skin:has(.eb-timeline[data-subtitle-rows]) :is(video, .eb-slate, .eb-end) {
+      --eb-panel-height: 181px;
     }
   }
 }

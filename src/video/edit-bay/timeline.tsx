@@ -10,7 +10,7 @@ import {
 import type { CSSProperties } from 'react';
 
 import { formatTimecode, useFrameRate } from './frame-rate';
-import { SubtitleLane, useSubtitlesShowing } from './subtitle-lane';
+import { SubtitleLane, useSubtitleCues, useSubtitlesShowing } from './subtitle-lane';
 
 /** Ruler steps, in seconds. The timeline uses the smallest one that gives at most eight labels. */
 const RULER_STEPS = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
@@ -30,7 +30,7 @@ export interface TimelineProps {
 }
 
 /**
- * The timeline: a ruler, a V1 lane that shows each chapter as a clip, an S1 subtitle lane, an A1 lane, a render bar for what has loaded,
+ * The timeline: a ruler, a V1 lane that shows each chapter as a clip, S1 and S2 subtitle lanes, an A1 lane, a render bar for what has loaded,
  * and a red playhead. The whole stack is one time slider, so a press anywhere on it moves the playhead, as in an
  * editor. Track headers sit outside the slider, so pressing them doesn't seek.
  */
@@ -41,21 +41,27 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
   const duration = time?.duration ?? 0;
   const step = duration > 0 ? rulerStep(duration) : 0;
   const labels =
-    step > 0 ? Array.from({ length: Math.floor(duration / step) + 1 }, (_, index) => index * step).filter((t) => t <= duration * RULER_LABEL_LIMIT) : [];
+    step > 0
+      ? Array.from({ length: Math.floor(duration / step) + 1 }, (_, index) => index * step).filter(
+          (t) => t <= duration * RULER_LABEL_LIMIT,
+        )
+      : [];
   const muted = Boolean(volume?.muted) || volume?.volume === 0;
   const subtitles = useSubtitlesShowing();
+  const { cues, rows: subtitleRows } = useSubtitleCues(subtitles);
   const rulerStyle = {
-    '--eb-tick-step': step > 0 ? `${((step / 5) / duration) * 100}%` : '100%',
+    '--eb-tick-step': step > 0 ? `${(step / 5 / duration) * 100}%` : '100%',
   } as CSSProperties;
 
   return (
-    <div className={'eb-timeline'}>
+    <div className={'eb-timeline'} data-subtitle-rows={subtitleRows > 1 ? subtitleRows : undefined}>
       <div className={'eb-track-headers'} aria-hidden="true">
         <span className={'eb-track-header eb-track-header-ruler'} />
         <span className={'eb-track-header eb-track-header-v1'}>V1</span>
         <span className={'eb-track-header eb-track-header-s1'} data-muted={subtitles ? undefined : ''}>
           S1
         </span>
+        {subtitleRows > 1 ? <span className={'eb-track-header eb-track-header-s2'}>S2</span> : null}
         <span className={'eb-track-header eb-track-header-a1'} data-muted={muted || undefined}>
           A1
         </span>
@@ -78,11 +84,7 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
           className={'media-time-slider-chapters eb-lane eb-lane-v1'}
           renderChapter={(props, state) => (
             <div className={'eb-chapter'} {...props}>
-              <div
-                className={'eb-clip'}
-                data-gap={state.cue ? undefined : ''}
-                data-color={state.index % CLIP_COLORS}
-              >
+              <div className={'eb-clip'} data-gap={state.cue ? undefined : ''} data-color={state.index % CLIP_COLORS}>
                 <span className={'eb-clip-marker'} aria-hidden="true" />
                 <span className={'eb-clip-name'} aria-hidden="true">
                   {state.cue?.text ?? ''}
@@ -92,7 +94,8 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
           )}
         />
 
-        <SubtitleLane />
+        <SubtitleLane row={0} cues={cues} showing={subtitles} />
+        {subtitleRows > 1 ? <SubtitleLane row={1} cues={cues} showing={subtitles} /> : null}
 
         <div className={'eb-lane eb-lane-a1'} data-muted={muted || undefined} aria-hidden="true">
           <div className={'eb-audio-clip'} />
