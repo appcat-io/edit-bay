@@ -10,6 +10,20 @@ bun dev
 
 This serves the project page at `/` and the workbench at `/workbench/`. The workbench opens your skin in a slimmed-down version of the Video.js sandbox. It plays Tears of Steel from Mux at 24 fps, with chapters and subtitles in six languages; change the media in `apps/preview/src/frame/player`. The options panel sets the player's width and aspect ratio, the color scheme, text direction, and language, and playback options such as autoplay, muted, loop, and preload. The arrow button opens the preview on its own. The settings live in the URL, so a link such as `/workbench/?width=384&ratio=9:16&dir=rtl&locale=ar` opens the workbench in that state, and `/preview.html#width=384&ratio=9:16` opens the preview alone.
 
+## Frame rate and timecode
+
+Browsers don't report a video's frame rate, so set it on the skin with `frameRate`. Timecode, frame steps, and the ruler use it.
+
+- NTSC rates: 23.976 (or 23.98), 29.97, and 59.94 count frames at their exact rate, 1000/1001 of 24, 30, or 60, so the count stays on the source's frames over a long program. Timecode labels them against 24, 30, or 60, as non-drop-frame timecode does.
+- `dropFrame`: drop-frame timecode (HH:MM:SS;FF) for 29.97 and 59.94. Other rates ignore it.
+- Frame on screen: the current timecode comes from the browser's frame report (`requestVideoFrameCallback`), which names the frame it drew. Where a browser doesn't report frames, or reports a time more than a frame from the player's own time while paused, the skin uses the player's time.
+- Pause: when playback pauses, the player settles on the middle of the frame the timecode names, so the picture, the timecode, and the next frame step agree.
+
+Limits:
+
+- Frame steps are exact for constant-frame-rate video. With variable-frame-rate video, timecode shows each frame's time at the rate you set, but steps move at that rate, so they can skip or repeat a frame.
+- Browsers don't promise frame-exact seeking. Timecode and steps were checked frame by frame in Chromium and Firefox, with 23.976 and 29.97 drop-frame test clips. Safari isn't checked yet. WebKit on Linux reports frame times two frames ahead, so the skin falls back to the player's time there.
+
 ## Deploy
 
 ```sh

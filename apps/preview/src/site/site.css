@@ -284,6 +284,15 @@ kbd {
 
 /* ---------- Code ---------- */
 
+.site-section-lead code {
+  font: 400 0.9em var(--site-mono);
+  color: var(--site-ink-strong);
+}
+
+.site-subhead {
+  margin-top: 8px;
+}
+
 .site-code {
   margin: 0 0 24px;
   padding: 16px 20px;

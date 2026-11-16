@@ -14,7 +14,7 @@ const REPO = 'https://github.com/appcat-io/edit-bay';
 const NOTES = [
   {
     title: 'Timeline and transport',
-    body: 'Chapters sit on V1 as colored clips and subtitles on S1. Hover the timeline for the frame, timecode, and chapter name. Timecode reads hours, minutes, seconds, and frames, and comma and period step one frame.',
+    body: 'Chapters sit on V1 as colored clips and subtitles on S1, with overlapping lines on S2. Hover the timeline for the frame, timecode, and chapter name. Timecode reads hours, minutes, seconds, and frames, taken from the frame on screen. Comma and period step one frame, and a pause settles on a whole frame.',
   },
   {
     title: 'Hairline and clean feed',
@@ -226,6 +226,17 @@ function Site() {
           <pre className="site-code">
             <code>{USAGE}</code>
           </pre>
+          <p className="site-section-lead">
+            Frame rates such as 23.976, 29.97, and 59.94 count frames at their exact rate. Add <code>dropFrame</code>{' '}
+            for drop-frame timecode at 29.97 and 59.94.
+          </p>
+          <h3 className="site-subhead">Limits</h3>
+          <p className="site-section-lead">
+            Timecode and frame steps match the picture for constant-frame-rate video. Variable-frame-rate video plays,
+            and timecode shows each frame's time, but steps move at the rate you set, so they can skip or repeat a
+            frame. The frame on screen comes from the browser. It's checked frame by frame in Chrome and Firefox, not
+            yet in Safari.
+          </p>
         </section>
       </main>
 

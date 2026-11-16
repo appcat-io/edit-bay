@@ -4,12 +4,16 @@ import { Time, selectTime, usePlayer } from '@videojs/react';
 import { useState } from 'react';
 
 import { formatTimecode, useFrameRate } from './frame-rate';
+import { usePresentedTime } from './presented-frame';
 
-/** Current time as timecode, for places that only display it. Screen readers get the player's own time text. */
+/**
+ * Current time as timecode, for places that only display it. The current time is the frame on screen where the browser
+ * reports it. Screen readers get the player's own time text.
+ */
 export function TimecodeText({ type }: { type: 'current' | 'duration' | 'remaining' }) {
   const time = usePlayer(selectTime);
   const frameRate = useFrameRate();
-  const current = time?.currentTime ?? 0;
+  const current = usePresentedTime(1 / frameRate.rate);
   const duration = time?.duration ?? 0;
   const value = type === 'current' ? current : type === 'duration' ? duration : Math.max(0, duration - current);
   return (

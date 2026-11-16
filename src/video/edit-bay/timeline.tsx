@@ -9,7 +9,7 @@ import {
 } from '@videojs/react';
 import type { CSSProperties } from 'react';
 
-import { formatTimecode, useFrameRate } from './frame-rate';
+import { formatTimecode, timecodeSecond, useFrameRate } from './frame-rate';
 import { SubtitleLane, useSubtitleCues, useSubtitlesShowing } from './subtitle-lane';
 
 /** Ruler steps, in seconds. The timeline uses the smallest one that gives at most eight labels. */
@@ -42,15 +42,17 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
   const step = duration > 0 ? rulerStep(duration) : 0;
   const labels =
     step > 0
-      ? Array.from({ length: Math.floor(duration / step) + 1 }, (_, index) => index * step).filter(
-          (t) => t <= duration * RULER_LABEL_LIMIT,
-        )
+      ? Array.from({ length: Math.floor(duration / step) + 1 }, (_, index) =>
+          timecodeSecond(index * step, frameRate),
+        ).filter((mark) => mark.seconds <= duration * RULER_LABEL_LIMIT)
       : [];
+  // A non-drop-frame timecode second at an NTSC rate lasts 1.001 seconds; ticks keep pace with the labels.
+  const tickSeconds = (step / 5) * (frameRate.dropFrame ? 1 : frameRate.base / frameRate.rate);
   const muted = Boolean(volume?.muted) || volume?.volume === 0;
   const subtitles = useSubtitlesShowing();
   const { cues, rows: subtitleRows } = useSubtitleCues(subtitles);
   const rulerStyle = {
-    '--eb-tick-step': step > 0 ? `${(step / 5 / duration) * 100}%` : '100%',
+    '--eb-tick-step': step > 0 ? `${(tickSeconds / duration) * 100}%` : '100%',
   } as CSSProperties;
 
   return (
@@ -73,9 +75,9 @@ export function Timeline({ renderThumbnail }: TimelineProps) {
         </div>
 
         <div className={'eb-ruler'} style={rulerStyle} aria-hidden="true">
-          {labels.map((seconds) => (
-            <span key={seconds} className={'eb-ruler-label'} style={{ left: `${(seconds / duration) * 100}%` }}>
-              {formatTimecode(seconds, frameRate)}
+          {labels.map((mark) => (
+            <span key={mark.label} className={'eb-ruler-label'} style={{ left: `${(mark.seconds / duration) * 100}%` }}>
+              {mark.label}
             </span>
           ))}
         </div>

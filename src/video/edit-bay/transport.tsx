@@ -12,8 +12,9 @@ import {
 import type { ReactElement } from 'react';
 
 import { Button } from '../shared/button';
-import { timebase, useFrameRate } from './frame-rate';
+import { frameAt, frameMiddle, useFrameRate } from './frame-rate';
 import { FrameBackIcon, FrameForwardIcon } from './icons';
+import { useStepFrom } from './presented-frame';
 
 /** Seconds a J press jumps back while playing at normal speed or paused. Matches the arrow keys and seek buttons. */
 export const SEEK_STEP = 10;
@@ -39,14 +40,16 @@ function useFrameStep() {
   const time = usePlayer(selectTime);
   const playback = usePlayer(selectPlayback);
   const frameRate = useFrameRate();
+  const stepFrom = useStepFrom();
 
   return (direction: 1 | -1) => {
     if (!time) return;
     if (playback && !playback.paused) playback.pause();
-    const frame = 1 / timebase(frameRate);
+    // Count from the frame on screen, which can differ from the player's time right after a pause.
+    const index = frameAt(stepFrom(1 / frameRate.rate) ?? time.currentTime, frameRate) + direction;
     // Land in the middle of the target frame, so rounding never leaves the picture on the old one.
-    const index = Math.floor(time.currentTime * timebase(frameRate) + 1e-4) + direction;
-    const target = Math.min(Math.max(0, (index + 0.5) * frame), Math.max(0, time.duration - frame / 2));
+    const last = frameAt(time.duration, frameRate) - 1;
+    const target = frameMiddle(Math.min(Math.max(0, index), Math.max(0, last)), frameRate);
     void time.seek(target);
   };
 }
